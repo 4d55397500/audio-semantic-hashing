@@ -14,3 +14,23 @@ Binary encoding/compression of audio files by way of semantic hashing. In this c
 ## Run
 
 `$ python3 semantic_hashing.py`
+
+
+
+```
+harpsichord -> bit sequence: 000001000010100
+trumpet -> bit sequence: 010001000111100
+harpsichord -> bit sequence: 000001000010100
+trumpet -> bit sequence: 010001000111100
+trumpet -> bit sequence: 010001000111100
+piano -> bit sequence: 010001000111100
+harpsichord -> bit sequence: 000001000010100
+harpsichord -> bit sequence: 000001000010100
+cello -> bit sequence: 000001010010100
+harpsichord -> bit sequence: 000001000010100
+3 distinct bit sequences
+000001000010100 -> ['harpsichord', 'harpsichord', 'harpsichord', 'harpsichord', 'harpsichord']
+010001000111100 -> ['trumpet', 'trumpet', 'trumpet', 'piano']
+000001010010100 -> ['cello']
+
+```
