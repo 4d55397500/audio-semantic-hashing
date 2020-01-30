@@ -152,6 +152,7 @@ def build_keys_list(local_filepaths):
 
 
 def prepare_and_train(remote_file_paths):
+    tf.compat.v1.disable_eager_execution()
 
     CHUNK_SIZE = 10000
 
