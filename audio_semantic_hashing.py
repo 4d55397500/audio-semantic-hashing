@@ -3,6 +3,7 @@ import tensorflow as tf
 import os
 import urllib.request
 from collections import Counter
+import scipy.io.wavfile
 
 SAMPLE_AUDIO = {
     "harpsichord": ["https://ccrma.stanford.edu/~jos/wav/harpsi-cs.wav",
@@ -11,27 +12,6 @@ SAMPLE_AUDIO = {
     "trumpet": ["https://ccrma.stanford.edu/~jos/wav/trumpet.wav"],
     "piano": ["https://ccrma.stanford.edu/~jos/wav/pno-cs.wav"]
 }
-
-def filename_to_key(fname):
-    for k in SAMPLE_AUDIO.keys():
-        links = SAMPLE_AUDIO[k]
-        if sum([int(fname in a) for a in links]) > 0:
-            return k
-
-def download_audio():
-    if not os.path.exists("./wavs"):
-        os.mkdir("./wavs")
-    for k in SAMPLE_AUDIO.keys():
-        links = SAMPLE_AUDIO[k]
-        for url in links:
-            fname = url.split("/")[-1]
-            if not os.path.exists(f"./wavs/{fname}"):
-                print(f"Downloading {url}...")
-                urllib.request.urlretrieve(url, filename="./wavs/" + fname)
-            else:
-                print(f"{fname} already downloaded")
-    print("finished downloads")
-
 
 class SemanticHashing(object):
 
@@ -55,7 +35,8 @@ class SemanticHashing(object):
                 self.encoder_layers.append(layer)
             else:
                 layer = tf.add(
-                    tf.matmul(self.encoder_layers[i], tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i], LAYER_DIMS[i + 1]]))),
+                    tf.matmul(self.encoder_layers[i],
+                              tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i], LAYER_DIMS[i + 1]]))),
                     tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i + 1]])))
                 self.encoder_layers.append(layer)
 
@@ -103,15 +84,39 @@ class SemanticHashing(object):
         ps = [ct * 1.0 / sum(cts) for ct in cts]
         return sum([-p * np.log(p) for p in ps])
 
-
     def decode(self, x):
         return self.session.run(self.output, feed_dict={self.x_in: x})
 
 
-def absoluteFilePaths(directory):
-   for dirpath, _, filenames in os.walk(directory):
-       for f in filenames:
-           yield os.path.abspath(os.path.join(dirpath, f))
+def filename_to_key(fname):
+    for k in SAMPLE_AUDIO.keys():
+        links = SAMPLE_AUDIO[k]
+        if sum([int(fname in a) for a in links]) > 0:
+            return k
+
+
+def all_filenames(filepaths):
+    return [url.split("/")[-1] for url in filepaths]
+
+
+def download_audio(filepaths):
+    if not os.path.exists("./wavs"):
+        os.mkdir("./wavs")
+    for url in filepaths:
+        fname = url.split("/")[-1]
+        if not os.path.exists(f"./wavs/{fname}"):
+            print(f"Downloading {url}...")
+            urllib.request.urlretrieve(url, filename="./wavs/" + fname)
+        else:
+            print(f"{fname} already downloaded")
+    print("finished downloads")
+
+
+def get_local_filepaths(directory, filenames):
+    for dirpath, _, fnames in os.walk(directory):
+        for f in fnames:
+            if f in filenames:
+                yield os.path.abspath(os.path.join(dirpath, f))
 
 
 def normalize(v):
@@ -121,30 +126,55 @@ def normalize(v):
     return v / norm
 
 
-def main():
+def chunk_audio(local_filepaths):
+
+    CHUNK_SIZE = 10000
+    all_chunks = []
+    for fname in local_filepaths:
+        rate, numpy_audio = scipy.io.wavfile.read(fname)
+        x = numpy_audio.flatten()
+        all_chunks += [normalize(x[i: i + CHUNK_SIZE]) for i in
+                       range(int(x.shape[0] / CHUNK_SIZE))]
+    x_train = np.vstack(all_chunks)
+    return all_chunks, x_train
+
+
+def build_keys_list(local_filepaths):
+
+    CHUNK_SIZE = 10000
+    keys = []
+    for fname in local_filepaths:
+        rate, numpy_audio = scipy.io.wavfile.read(fname)
+        x = numpy_audio.flatten()
+        key = filename_to_key(fname.split("/")[-1])
+        keys += [key] * int(x.shape[0] / CHUNK_SIZE)
+    return keys
+
+
+def prepare_and_train(remote_file_paths):
 
     CHUNK_SIZE = 10000
 
-    import scipy.io.wavfile
-    download_audio()
+    filenames = all_filenames(remote_file_paths)
+    download_audio(remote_file_paths)
 
-    filenames = list(absoluteFilePaths("./wavs"))
-    all_chunks = []
-    keys = []
-    for fname in filenames:
-        rate, numpy_audio = scipy.io.wavfile.read(fname)
-        x = numpy_audio.flatten()
-        all_chunks += [normalize(x[i: i + CHUNK_SIZE]) for i in range(int(x.shape[0]/CHUNK_SIZE))]
-        key = filename_to_key(fname.split("/")[-1])
-        keys += [key] * int(x.shape[0]/CHUNK_SIZE)
-
-    tf.compat.v1.disable_eager_execution()
-    x_train = np.vstack(all_chunks)
-    print(f"training set shape: {x_train.shape}")
+    local_filepaths = list(get_local_filepaths("./wavs", filenames))
+    all_chunks, x_train = chunk_audio(local_filepaths)
+    #print(f"training set shape: {x_train.shape}")
     ash = SemanticHashing(xdim=CHUNK_SIZE, hdim=15)
     ash.train(x_train=x_train, batch_size=300, n_epochs=100)
+    return local_filepaths, all_chunks, ash
+
+
+def main():
+
+    tf.compat.v1.disable_eager_execution()
+    remote_file_paths = [url for urls in SAMPLE_AUDIO.values() for url in urls]
+    local_filepaths = all_chunks, ash = prepare_and_train(remote_file_paths)
+    keys = build_keys_list(local_filepaths)
 
     N_SAMPLES = 10
+
     test_indices = np.random.choice(len(all_chunks), N_SAMPLES)
     x_test = np.array(all_chunks)[test_indices]
     encoded_x = ash.encode(x_test)
