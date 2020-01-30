@@ -42,21 +42,21 @@ class SemanticHashing(object):
         self.xdim = xdim
         self.hdim = hdim
 
-        self.noise = tf.placeholder('float', shape=[None, hdim])
-        self.x_in = tf.placeholder('float', [None, xdim])
+        self.noise = tf.compat.v1.placeholder('float', shape=[None, hdim])
+        self.x_in = tf.compat.v1.placeholder('float', [None, xdim])
 
         self.encoder_layers = [self.x_in]
         for i in range(len(LAYER_DIMS) - 1):
             if i == len(LAYER_DIMS) - 2:
                 layer = tf.nn.sigmoid(tf.add(
                     tf.matmul(self.encoder_layers[i],
-                              tf.Variable(tf.random_normal([LAYER_DIMS[i], LAYER_DIMS[i + 1]]))),
-                    tf.Variable(tf.random_normal([LAYER_DIMS[i + 1]]))) + self.noise)
+                              tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i], LAYER_DIMS[i + 1]]))),
+                    tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i + 1]]))) + self.noise)
                 self.encoder_layers.append(layer)
             else:
                 layer = tf.add(
-                    tf.matmul(self.encoder_layers[i], tf.Variable(tf.random_normal([LAYER_DIMS[i], LAYER_DIMS[i + 1]]))),
-                    tf.Variable(tf.random_normal([LAYER_DIMS[i + 1]])))
+                    tf.matmul(self.encoder_layers[i], tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i], LAYER_DIMS[i + 1]]))),
+                    tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[i + 1]])))
                 self.encoder_layers.append(layer)
 
         self.h = self.encoder_layers[-1]
@@ -65,16 +65,16 @@ class SemanticHashing(object):
         for i in range(len(LAYER_DIMS) - 1):
             layer = tf.add(
                 tf.matmul(self.decoder_layers[i],
-                          tf.Variable(tf.random_normal([LAYER_DIMS[::-1][i], LAYER_DIMS[::-1][i + 1]]))),
-                tf.Variable(tf.random_normal([LAYER_DIMS[::-1][i + 1]])))
+                          tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[::-1][i], LAYER_DIMS[::-1][i + 1]]))),
+                tf.Variable(tf.compat.v1.random_normal([LAYER_DIMS[::-1][i + 1]])))
             self.decoder_layers.append(layer)
 
         self.output = self.decoder_layers[-1]
-        self.x_out = tf.placeholder('float', [None, xdim])
+        self.x_out = tf.compat.v1.placeholder('float', [None, xdim])
         self.loss = tf.reduce_mean(tf.square(self.x_out - self.output))
-        self.optimizer = tf.train.AdamOptimizer(0.1).minimize(self.loss)
-        self.initializer = tf.global_variables_initializer()
-        self.session = tf.Session()
+        self.optimizer = tf.compat.v1.train.AdamOptimizer(0.1).minimize(self.loss)
+        self.initializer = tf.compat.v1.global_variables_initializer()
+        self.session = tf.compat.v1.Session()
 
     def train(self, x_train, batch_size, n_epochs):
 
@@ -138,6 +138,7 @@ def main():
         key = filename_to_key(fname.split("/")[-1])
         keys += [key] * int(x.shape[0]/CHUNK_SIZE)
 
+    tf.compat.v1.disable_eager_execution()
     x_train = np.vstack(all_chunks)
     print(f"training set shape: {x_train.shape}")
     ash = SemanticHashing(xdim=CHUNK_SIZE, hdim=15)
