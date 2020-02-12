@@ -1,5 +1,5 @@
 import requests
-from audio_semantic_hashing import SAMPLE_AUDIO
+from constants import SAMPLE_AUDIO
 
 remote_file_paths = [url for urls in SAMPLE_AUDIO.values() for url in urls]
 

@@ -2,9 +2,10 @@
 from flask import Flask, jsonify, request
 
 import audio_semantic_hashing
+import constants
 
 app = Flask(__name__)
-SAMPLE_FILEPATHS = [url for urls in audio_semantic_hashing.SAMPLE_AUDIO.values()
+SAMPLE_FILEPATHS = [url for urls in constants.SAMPLE_AUDIO.values()
                     for url in urls]
 
 # train -> bit sequences, audio chunk map structure

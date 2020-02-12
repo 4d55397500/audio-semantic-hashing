@@ -1,22 +1,52 @@
 # audio_ops.py
-import scipy
+import os
+import urllib.request
 
-def chunk_audio(wav_infilepath, chunks_outfilepath, chunk_size:
-    """ chunk the given audio file into chunks of given size """
-    rate, np_audio = scipy.io.wavefile.read(wav_infilepath)
+import numpy as np
+import scipy.io.wavfile
+
+from constants import WAV_CHUNK_SIZE
 
 
+def chunk_audio(wav_infilepath, chunks_outdir, chunk_size):
+    """ chunk the given audio file into chunks of given size
+     and write to disk """
+    if not os.path.exists(chunks_outdir):
+        os.makedirs(chunks_outdir)
+    wavname = wav_infilepath.split("/")[-1].split(".")[0]
+    rate, np_audio = scipy.io.wavfile.read(wav_infilepath)
+    length = np_audio.shape[0]
+    i = 0
+    chunks = []
+    while i < length:
+        np_chunk = np_audio[i * chunk_size: (i+1) * chunk_size]
+        chunks.append(np_chunk)
+        i += chunk_size
+        fpath = os.path.abspath(os.path.join(chunks_outdir, f"{wavname}_{i}.wav"))
+        scipy.io.wavfile.write(fpath, rate, np_chunk)
 
 
-def chunk_audio(local_filepaths):
+def chunk_audio2(local_filepaths):
 
-    CHUNK_SIZE = 10000
     all_chunks = []
     for fname in local_filepaths:
         rate, numpy_audio = scipy.io.wavfile.read(fname)
         x = numpy_audio.flatten()
-        all_chunks += [normalize(x[i: i + CHUNK_SIZE]) for i in
-                       range(int(x.shape[0] / CHUNK_SIZE))]
+        all_chunks += [normalize(x[i: i + WAV_CHUNK_SIZE]) for i in
+                       range(int(x.shape[0] / WAV_CHUNK_SIZE))]
     x_train = np.vstack(all_chunks)
     return all_chunks, x_train
+
+
+def download_wav_files(remote_filepaths):
+    if not os.path.exists("./wavs"):
+        os.mkdir("./wavs")
+    for url in remote_filepaths:
+        fname = url.split("/")[-1]
+        if not os.path.exists(f"./wavs/{fname}"):
+            print(f"Downloading {url}...")
+            urllib.request.urlretrieve(url, filename="./wavs/" + fname)
+        else:
+            print(f"{fname} already downloaded")
+    print("finished downloads")
 
