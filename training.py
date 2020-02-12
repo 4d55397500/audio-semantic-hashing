@@ -16,10 +16,55 @@ def train(batch_size, n_epochs):
 
     tf.compat.v1.disable_eager_execution()
 
-    SemanticHashing(
+    model = SemanticHashing(
         xdim=WAV_CHUNK_SIZE,
-        hdim=ENCODED_BITSEQ_LENGTH).train(
+        hdim=ENCODED_BITSEQ_LENGTH)
+    model.train(
         x_train=x_train,
         batch_size=batch_size,
         n_epochs=n_epochs)
+    return model
+
+
+def train_pytorch(batch_size, n_epochs):
+
+    import torch
+    from pytorch_sh import SemanticHashing, \
+        DenseEncoder, DenseDecoder
+
+    x_train = torch.tensor(chunks_to_numpy(LOCAL_CHUNK_FILEPATHS)).float()
+    assert x_train.shape[1] == WAV_CHUNK_SIZE, \
+        "incorrect training input dimensions"
+
+    de = DenseEncoder()
+    dd = DenseDecoder()
+    model = SemanticHashing(
+        encoder=de,
+        decoder=dd
+    )
+
+    criterion = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+    N = x_train.size()[0]
+    for epoch in range(n_epochs):
+        permutation = torch.randperm(N)
+        epoch_loss = 0.
+        for i in range(0, N, batch_size):
+            optimizer.zero_grad()
+            if i + batch_size >= N:
+                k = i + batch_size - N
+                indices = torch.cat((permutation[i:], permutation[:k]), 0)
+                assert (len(indices) == batch_size)
+            else:
+                indices = permutation[i:i+batch_size]
+            batch_x = x_train[indices]
+            output = model.forward(batch_x)
+            loss = criterion(output, batch_x)
+            epoch_loss += loss.item()
+            loss.backward()
+            optimizer.step()
+            noise_sigma = model.noise_sigma
+        print(f"epoch: {epoch} epoch loss: {epoch_loss} noise sigma: {noise_sigma}")
+
 

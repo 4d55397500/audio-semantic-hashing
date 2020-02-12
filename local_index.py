@@ -3,7 +3,7 @@
     A local index over binary sequences using the Hamming distance
     function in the annoy library
 
-    the library requires audio chunks (or whatever object being index)
+    the library requires audio chunks (or whatever object being indexed)
     to be identified by an integer
 """
 from annoy import AnnoyIndex

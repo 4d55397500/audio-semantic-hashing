@@ -1,7 +1,6 @@
 import os
 import unittest
 
-
 import audio_ops
 import constants
 
@@ -23,7 +22,6 @@ class TestAudioOps(unittest.TestCase):
         num_chunks = len(os.listdir(constants.LOCAL_CHUNK_FILEPATHS))
         assert x.shape[0] == num_chunks
         assert x.shape[1] == constants.WAV_CHUNK_SIZE
-
 
 
 if __name__ == "__main__":
