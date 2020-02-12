@@ -1,6 +1,6 @@
 # constants.py
 
-WAV_CHUNK_SIZE = 10000
+WAV_CHUNK_SIZE = 1000
 SAMPLE_AUDIO = {
     "harpsichord": ["https://ccrma.stanford.edu/~jos/wav/harpsi-cs.wav",
                     "https://ccrma.stanford.edu/~jos/wav/Harpsichord.wav"],

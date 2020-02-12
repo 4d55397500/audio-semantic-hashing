@@ -22,7 +22,6 @@ class TestApi(unittest.TestCase):
         assert 'wavs/harpsi-cs.wav' in content['local_filepaths'], 'missing wav'
         assert 'wavs/cello.wav' in content['local_filepaths'], 'missing wav'
 
-
     def test_dataset_info(self):
         response = self.app.get("/datasetinfo")
         content = response.json

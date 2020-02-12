@@ -8,8 +8,8 @@ from flask import Flask, jsonify, request
 import os
 
 import audio_ops
-import constants
 import sample_train
+
 
 app = Flask(__name__)
 
@@ -25,12 +25,13 @@ def dataset_info():
 
 @app.route('/add', methods=['POST'])
 def add():
-    """ Add wav files and chunks"""
+    """ Add wav files and create chunks"""
     if request.method == "POST":
         content = request.json
         remote_filepaths = content["filepaths"]
         local_filepaths = audio_ops.download_wav_files(remote_filepaths)
-        #audio_ops.chunk_audio(local_filepaths)
+        for wav_fp in local_filepaths:
+            audio_ops.chunk_audio(wav_fp)
         return jsonify({'status': 'success',
                         'local_filepaths': local_filepaths})
 

@@ -3,7 +3,12 @@ import unittest
 
 
 class TestAudioSemanticHashing(unittest.TestCase):
-    pass
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
 
 
 if __name__ == "__main__":
