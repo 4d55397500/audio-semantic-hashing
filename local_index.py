@@ -31,6 +31,10 @@ from constants import ENCODED_BITSEQ_LENGTH
 #
 
 
+def build_index():
+    pass
+
+
 def initialize_index():
     return AnnoyIndex(ENCODED_BITSEQ_LENGTH, 'hamming')
 
