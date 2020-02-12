@@ -1,8 +1,9 @@
 # api.py
 from flask import Flask, jsonify, request
 
-import audio_semantic_hashing
+import semantic_hashing
 import constants
+import sample_train
 
 app = Flask(__name__)
 SAMPLE_FILEPATHS = [url for urls in constants.SAMPLE_AUDIO.values()
@@ -18,9 +19,10 @@ def train():
         local_filepaths = train_on_paths(remote_filepaths)
         return jsonify({'local_filepaths': local_filepaths})
 
+
 def train_on_paths(remote_filepaths):
     # download and then train on the wav audio files of the given remote filepaths
-    local_filepaths, all_chunks, ash = audio_semantic_hashing.prepare_and_train(remote_filepaths)
+    local_filepaths, all_chunks, ash = sample_train.prepare_and_train(remote_filepaths)
     return local_filepaths
 
 

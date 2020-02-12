@@ -1,11 +1,7 @@
 # audio_ops.py
 import os
 import urllib.request
-
-import numpy as np
 import scipy.io.wavfile
-
-from constants import WAV_CHUNK_SIZE
 
 
 def chunk_audio(wav_infilepath, chunks_outdir, chunk_size):
@@ -24,18 +20,6 @@ def chunk_audio(wav_infilepath, chunks_outdir, chunk_size):
         i += chunk_size
         fpath = os.path.abspath(os.path.join(chunks_outdir, f"{wavname}_{i}.wav"))
         scipy.io.wavfile.write(fpath, rate, np_chunk)
-
-
-def chunk_audio2(local_filepaths):
-
-    all_chunks = []
-    for fname in local_filepaths:
-        rate, numpy_audio = scipy.io.wavfile.read(fname)
-        x = numpy_audio.flatten()
-        all_chunks += [normalize(x[i: i + WAV_CHUNK_SIZE]) for i in
-                       range(int(x.shape[0] / WAV_CHUNK_SIZE))]
-    x_train = np.vstack(all_chunks)
-    return all_chunks, x_train
 
 
 def download_wav_files(remote_filepaths):
