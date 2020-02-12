@@ -12,6 +12,22 @@ from misc_ops import build_keys_list, all_filenames, get_local_filepaths, \
 from audio_ops import download_wav_files
 
 
+def train(x_train, batch_size, n_epochs):
+
+    assert x_train.shape[1] == WAV_CHUNK_SIZE, \
+        "incorrect training input dimensions"
+
+    tf.compat.v1.disable_eager_execution()
+
+    SemanticHashing(
+        xdim=WAV_CHUNK_SIZE,
+        hdim=ENCODED_BITSEQ_LENGTH).train(
+            x_train=x_train,
+            batch_size=batch_size,
+            n_epochs=n_epochs)
+
+
+
 def prepare_and_train(remote_file_paths, n_epochs):
     tf.compat.v1.disable_eager_execution()
 

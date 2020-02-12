@@ -8,7 +8,7 @@ from flask import Flask, jsonify, request
 import os
 
 import audio_ops
-import sample_train
+import training
 
 
 app = Flask(__name__)
@@ -42,8 +42,7 @@ def train():
         content = request.json
         remote_filepaths = content["filepaths"]
         n_epochs = content['n_epochs']
-        sample_train.prepare_and_train(remote_filepaths,
-                                       n_epochs=n_epochs)
+        training.train(batch_size=300, n_epochs=n_epochs)
         return jsonify({'status': 'success'})
 
 

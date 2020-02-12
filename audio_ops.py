@@ -18,6 +18,7 @@ def chunk_audio(wav_infilepath,
         os.makedirs(chunks_outdir)
     wavname = wav_infilepath.split("/")[-1].split(".")[0]
     rate, np_audio = scipy.io.wavfile.read(wav_infilepath)
+    np_audio = np_audio.flatten()
     length = np_audio.shape[0]
     i = 0
     chunks = []
@@ -26,7 +27,8 @@ def chunk_audio(wav_infilepath,
         chunks.append(np_chunk)
         i += chunk_size
         fpath = os.path.abspath(os.path.join(chunks_outdir, f"{wavname}_{i}.wav"))
-        scipy.io.wavfile.write(fpath, rate, np_chunk)
+        if not os.path.exists(fpath):
+            scipy.io.wavfile.write(fpath, rate, np_chunk)
 
 
 def chunks_to_numpy(chunks_dir):
