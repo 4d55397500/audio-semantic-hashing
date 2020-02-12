@@ -1,7 +1,12 @@
 # api.py
+"""
+    /train call takes path to wav files and writes local chunks,
+    then trains and writes to index
+
+"""
 from flask import Flask, jsonify, request
 
-import semantic_hashing
+
 import constants
 import sample_train
 
