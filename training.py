@@ -1,9 +1,12 @@
 # training.py
 import tensorflow as tf
+import torch
+from pytorch_sh import SemanticHashing, \
+        DenseEncoder, DenseDecoder
 
 from semantic_hashing import SemanticHashing
 from constants import WAV_CHUNK_SIZE, \
-    ENCODED_BITSEQ_LENGTH, LOCAL_CHUNK_FILEPATHS
+    ENCODED_BITSEQ_LENGTH, LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_PATH
 
 from audio_ops import chunks_to_numpy
 
@@ -27,10 +30,6 @@ def train(batch_size, n_epochs):
 
 
 def train_pytorch(batch_size, n_epochs):
-
-    import torch
-    from pytorch_sh import SemanticHashing, \
-        DenseEncoder, DenseDecoder
 
     x_train = torch.tensor(chunks_to_numpy(LOCAL_CHUNK_FILEPATHS)).float()
     assert x_train.shape[1] == WAV_CHUNK_SIZE, \
@@ -65,6 +64,19 @@ def train_pytorch(batch_size, n_epochs):
             loss.backward()
             optimizer.step()
             noise_sigma = model.noise_sigma
-        print(f"epoch: {epoch} epoch loss: {epoch_loss} noise sigma: {noise_sigma}")
+        if epoch % 10 == 0:
+            print(f"epoch: {epoch} epoch loss: {epoch_loss} noise sigma: {noise_sigma}")
+            print(f"saving model to {MODEL_SAVE_PATH}")
+            torch.save(model, MODEL_SAVE_PATH)
 
 
+def inference(x):
+
+    model = torch.load(MODEL_SAVE_PATH)
+    binary_enc = model.binary_encoding(x)
+    return binary_enc
+
+
+
+#train_pytorch(batch_size=300, n_epochs=1000)
+inference()

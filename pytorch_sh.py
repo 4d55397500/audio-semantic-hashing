@@ -23,6 +23,11 @@ class SemanticHashing(torch.nn.Module):
         self.noise_increment = noise_increment
         self.i = 0
 
+    def binary_encoding(self, x):
+        threshold = torch.Tensor([0.5])
+        z = torch.sigmoid(self.encoder.forward(x))
+        return (z > threshold).float() * 1
+
     def forward(self, x):
         enc_x = self.encoder.forward(x)
         z = enc_x + self.noise_sigma * torch.randn(size=enc_x.size())
