@@ -25,11 +25,12 @@ def dataset_info():
 
 @app.route('/add', methods=['POST'])
 def add():
-    """ Add wavs files"""
+    """ Add wav files and chunks"""
     if request.method == "POST":
         content = request.json
         remote_filepaths = content["filepaths"]
         local_filepaths = audio_ops.download_wav_files(remote_filepaths)
+        #audio_ops.chunk_audio(local_filepaths)
         return jsonify({'status': 'success',
                         'local_filepaths': local_filepaths})
 

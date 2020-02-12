@@ -3,6 +3,8 @@ import os
 import urllib.request
 import scipy.io.wavfile
 
+from constants import LOCAL_CHUNK_FILEPATHS, LOCAL_WAV_FILEPATHS
+
 
 def chunk_audio(wav_infilepath, chunks_outdir, chunk_size):
     """ chunk the given audio file into chunks of given size
@@ -23,12 +25,13 @@ def chunk_audio(wav_infilepath, chunks_outdir, chunk_size):
 
 
 def download_wav_files(remote_filepaths):
-    if not os.path.exists("./wavs"):
-        os.mkdir("./wavs")
+    if not os.path.exists(LOCAL_WAV_FILEPATHS):
+        os.mkdir(LOCAL_WAV_FILEPATHS)
     local_filepaths = []
     for url in remote_filepaths:
         fname = url.split("/")[-1]
-        local_fp = f'wavs/{fname}'
+        local_fp = os.path.join(LOCAL_WAV_FILEPATHS, fname)
+        #local_fp = f'wavs/{fname}'
         if not os.path.exists(local_fp):
             print(f"Downloading {url}...")
 

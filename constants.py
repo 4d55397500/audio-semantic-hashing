@@ -16,3 +16,5 @@ NOISE_MULTIPLICATIVE_INCREMENT = 1.05
 # length of encoded bit sequence representation
 ENCODED_BITSEQ_LENGTH = 15
 
+LOCAL_WAV_FILEPATHS = "wavs"
+LOCAL_CHUNK_FILEPATHS = "chunks"
