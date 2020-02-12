@@ -40,7 +40,6 @@ def add():
 def train():
     if request.method == 'POST':
         content = request.json
-        remote_filepaths = content["filepaths"]
         n_epochs = content['n_epochs']
         training.train(batch_size=300, n_epochs=n_epochs)
         return jsonify({'status': 'success'})

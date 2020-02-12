@@ -32,8 +32,7 @@ class TestApi(unittest.TestCase):
 
     def test_train(self):
         response = self.app.post("/train",
-                        json={"filepaths": self.remote_file_paths,
-                              "n_epochs": 1})
+                                 json={"n_epochs": 1})
         content = response.json
         assert 'status' in content
         assert content['status'] == 'success'
