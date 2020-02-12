@@ -70,9 +70,11 @@ class SemanticHashing(object):
                 _, batch_loss = self.session.run([self.optimizer, self.loss],
                                                  feed_dict={self.x_in: batch, self.x_out: batch, self.noise: noise})
                 epoch_loss += batch_loss
-            print(f"Epoch: {epoch}/{n_epochs} Epoch loss: {epoch_loss} Noise std: {noise_std}")
+
             h_entropy = self.encoded_entropy(x_train)
-            print(f"Encoded entropy: {h_entropy}")
+            if epoch % 100 == 0:
+                print(f"Epoch: {epoch}/{n_epochs} Epoch loss: {epoch_loss} Noise std: {noise_std}")
+                print(f"Encoded entropy: {h_entropy}")
 
     def encode(self, x):
         return self.session.run(self.h, feed_dict={self.x_in: x, self.noise: np.random.normal(0.0, 0.0, size=(x.shape[0], self.hdim))})
@@ -163,7 +165,7 @@ def prepare_and_train(remote_file_paths):
     all_chunks, x_train = chunk_audio(local_filepaths)
     #print(f"training set shape: {x_train.shape}")
     ash = SemanticHashing(xdim=CHUNK_SIZE, hdim=15)
-    ash.train(x_train=x_train, batch_size=300, n_epochs=100)
+    ash.train(x_train=x_train, batch_size=300, n_epochs=1000)
     return local_filepaths, all_chunks, ash
 
 
@@ -171,7 +173,7 @@ def main():
 
     tf.compat.v1.disable_eager_execution()
     remote_file_paths = [url for urls in SAMPLE_AUDIO.values() for url in urls]
-    local_filepaths = all_chunks, ash = prepare_and_train(remote_file_paths)
+    local_filepaths, all_chunks, ash = prepare_and_train(remote_file_paths)
     keys = build_keys_list(local_filepaths)
 
     N_SAMPLES = 10
