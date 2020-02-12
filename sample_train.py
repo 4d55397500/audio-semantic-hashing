@@ -3,14 +3,16 @@
 import numpy as np
 import tensorflow as tf
 
+
 from semantic_hashing import SemanticHashing
-from constants import SAMPLE_AUDIO, WAV_CHUNK_SIZE
+from constants import SAMPLE_AUDIO, WAV_CHUNK_SIZE, \
+    ENCODED_BITSEQ_LENGTH
 from misc_ops import build_keys_list, all_filenames, get_local_filepaths, \
     audio_to_numpy
 from audio_ops import download_wav_files
 
 
-def prepare_and_train(remote_file_paths):
+def prepare_and_train(remote_file_paths, n_epochs):
     tf.compat.v1.disable_eager_execution()
 
     filenames = all_filenames(remote_file_paths)
@@ -19,8 +21,8 @@ def prepare_and_train(remote_file_paths):
     local_filepaths = list(get_local_filepaths("./wavs", filenames))
     all_chunks, x_train = audio_to_numpy(local_filepaths)
     # print(f"training set shape: {x_train.shape}")
-    ash = SemanticHashing(xdim=WAV_CHUNK_SIZE, hdim=15)
-    ash.train(x_train=x_train, batch_size=300, n_epochs=100)
+    ash = SemanticHashing(xdim=WAV_CHUNK_SIZE, hdim=ENCODED_BITSEQ_LENGTH)
+    ash.train(x_train=x_train, batch_size=300, n_epochs=n_epochs)
     return local_filepaths, all_chunks, ash
 
 
@@ -28,7 +30,8 @@ def sample_train():
 
     tf.compat.v1.disable_eager_execution()
     remote_file_paths = [url for urls in SAMPLE_AUDIO.values() for url in urls]
-    local_filepaths = all_chunks, ash = prepare_and_train(remote_file_paths)
+    local_filepaths = all_chunks, ash = prepare_and_train(remote_file_paths,
+                                                          n_epochs=100)
     keys = build_keys_list(local_filepaths)
 
     num_test_samples = 10

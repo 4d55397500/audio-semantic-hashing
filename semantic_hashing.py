@@ -3,14 +3,14 @@ import tensorflow as tf
 from collections import Counter
 
 from constants import INTERMEDIATE_LAYER_DIMS, INITIAL_NOISE_STD,\
-    NOISE_MULTIPLICATIVE_INCREMENT
+    NOISE_MULTIPLICATIVE_INCREMENT, ENCODED_BITSEQ_LENGTH
 
 
 class SemanticHashing(object):
 
     """ Semantic hashing with dense layers """
 
-    def __init__(self, xdim, hdim):
+    def __init__(self, xdim, hdim=ENCODED_BITSEQ_LENGTH):
 
         layer_dims = [xdim] + INTERMEDIATE_LAYER_DIMS + [hdim]
 

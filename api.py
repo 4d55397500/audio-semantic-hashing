@@ -5,37 +5,44 @@
 
 """
 from flask import Flask, jsonify, request
+import os
 
-
+import audio_ops
 import constants
 import sample_train
 
 app = Flask(__name__)
-SAMPLE_FILEPATHS = [url for urls in constants.SAMPLE_AUDIO.values()
-                    for url in urls]
 
-# train -> bit sequences, audio chunk map structure
+
+@app.route('/datasetinfo', methods=['GET'])
+def dataset_info():
+    """ returns the number of wav files and chunks present locally """
+    if request.method == "GET":
+        num_wavs = len(os.listdir("./wavs"))
+        num_chunks = len(os.listdir("./chunks"))
+        return jsonify(({'num_wavs': num_wavs, 'num_chunks': num_chunks}))
+
+
+@app.route('/add', methods=['POST'])
+def add():
+    """ Add wavs files"""
+    if request.method == "POST":
+        content = request.json
+        remote_filepaths = content["filepaths"]
+        local_filepaths = audio_ops.download_wav_files(remote_filepaths)
+        return jsonify({'status': 'success',
+                        'local_filepaths': local_filepaths})
+
 
 @app.route('/train', methods=['POST'])
 def train():
     if request.method == 'POST':
         content = request.json
         remote_filepaths = content["filepaths"]
-        local_filepaths = train_on_paths(remote_filepaths)
-        return jsonify({'local_filepaths': local_filepaths})
-
-
-def train_on_paths(remote_filepaths):
-    # download and then train on the wav audio files of the given remote filepaths
-    local_filepaths, all_chunks, ash = sample_train.prepare_and_train(remote_filepaths)
-    return local_filepaths
-
-
-def encode_persist(remote_filepaths):
-    # encode chunks and persist byte sequences in bigtable / column-store with the corresponding
-    # audio chunk as a column value
-    # download if necessary else use local copy for files
-    pass
+        n_epochs = content['n_epochs']
+        sample_train.prepare_and_train(remote_filepaths,
+                                       n_epochs=n_epochs)
+        return jsonify({'status': 'success'})
 
 
 if __name__ == "__main__":

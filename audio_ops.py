@@ -25,14 +25,19 @@ def chunk_audio(wav_infilepath, chunks_outdir, chunk_size):
 def download_wav_files(remote_filepaths):
     if not os.path.exists("./wavs"):
         os.mkdir("./wavs")
+    local_filepaths = []
     for url in remote_filepaths:
         fname = url.split("/")[-1]
-        if not os.path.exists(f"./wavs/{fname}"):
+        local_fp = f'wavs/{fname}'
+        if not os.path.exists(local_fp):
             print(f"Downloading {url}...")
-            urllib.request.urlretrieve(url, filename="./wavs/" + fname)
+
+            urllib.request.urlretrieve(url, filename=local_fp)
         else:
             print(f"{fname} already downloaded")
+        local_filepaths.append(local_fp)
     print("finished downloads")
+    return local_filepaths
 
 
 
