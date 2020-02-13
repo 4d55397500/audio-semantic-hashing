@@ -12,6 +12,10 @@ Increasing amounts of noise are introduced after the encoder prior to a sigmoid 
 
 The sigmoid saturated output constitutes a binary compressed representation of the data.
 
+
+An index over binary compressed representations of audio chunks facilitates neighbor
+search using a hamming distance.
+
 Requirements
 --
 
