@@ -1,6 +1,6 @@
 # constants.py
 
-WAV_CHUNK_SIZE = 1000
+WAV_CHUNK_SIZE = 10000
 SAMPLE_AUDIO = {
     "harpsichord": ["https://ccrma.stanford.edu/~jos/wav/harpsi-cs.wav",
                     "https://ccrma.stanford.edu/~jos/wav/Harpsichord.wav"],
@@ -26,4 +26,7 @@ INDEX_DIR = "index"
 INDEX_SAVE_PATH = f"{INDEX_DIR}/index.ann"
 ID_MAPPING_SAVE_PATH = f"{INDEX_DIR}/ids.pkl"
 
-INDEX_NUM_TREES = 10  # how to choose?
+INDEX_NUM_TREES = 100  # how to choose?
+
+LOCAL_SEARCH_CHUNKS_DIR = "tmp"
+TEST_RESOURCES_DIR = "test_resources"

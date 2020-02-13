@@ -32,7 +32,7 @@ class TestApi(unittest.TestCase):
 
     def test_train(self):
         response = self.app.post("/train",
-                                 json={"n_epochs": 1})
+                                 json={"n_epochs": 100})
         content = response.json
         assert 'status' in content
         assert content['status'] == 'success'
@@ -42,6 +42,16 @@ class TestApi(unittest.TestCase):
         content = response.json
         assert 'status' in content
         assert content['status'] == 'success'
+
+    def test_search(self):
+        test_wav = "test_resources/test.wav"
+        with open(test_wav, 'rb') as handle:
+            data = dict(
+                file=(handle, 'test.wav')
+            )
+            response = self.app.post('/search',
+                                     data=data,
+                                     content_type='multipart/form-data')
 
 
 if __name__ == "__main__":

@@ -4,12 +4,14 @@
     then trains and writes to index
 
 """
+import io
 from flask import Flask, jsonify, request
 import os
 
 import audio_ops
 import local_index
 import training
+import constants
 
 
 app = Flask(__name__)
@@ -32,7 +34,7 @@ def add():
         remote_filepaths = content["filepaths"]
         local_filepaths = audio_ops.download_wav_files(remote_filepaths)
         for wav_fp in local_filepaths:
-            audio_ops.chunk_audio(wav_fp)
+            audio_ops.chunk_write_audio(wav_fp)
         return jsonify({'status': 'success',
                         'local_filepaths': local_filepaths})
 
@@ -59,13 +61,20 @@ def index():
         return jsonify({'status': 'success'})
 
 
-@app.route("/search", methods=["GET"])
+@app.route("/search", methods=["POST"])
 def search():
     """ Search for nearest matching elements in the index,
     by chunking a passed audio wav and querying the index
     for each such chunk.
     """
-    pass
+    if request.method == "POST":
+        wav = request.files['file']
+        wav_bytes = wav.read()
+        local_index.run_search(wav_bytes)
+        return jsonify({'something': 123})
+
+
+
 
 
 if __name__ == "__main__":

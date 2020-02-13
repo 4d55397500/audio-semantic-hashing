@@ -9,16 +9,25 @@ from constants import LOCAL_CHUNK_FILEPATHS, \
     LOCAL_WAV_FILEPATHS, WAV_CHUNK_SIZE
 
 
-def chunk_audio(wav_infilepath,
-                chunks_outdir=LOCAL_CHUNK_FILEPATHS,
-                chunk_size=WAV_CHUNK_SIZE):
+def chunk_write_audio(wav_infilepath,
+                      chunks_outdir=LOCAL_CHUNK_FILEPATHS,
+                      chunk_size=WAV_CHUNK_SIZE):
     """ chunk the given audio file into chunks of given size
      and write to disk """
     print(f"chunking audio for {wav_infilepath}...")
     if not os.path.exists(chunks_outdir):
         os.makedirs(chunks_outdir)
     wavname = wav_infilepath.split("/")[-1].split(".")[0]
-    rate, np_audio = scipy.io.wavfile.read(wav_infilepath)
+    rate, chunks = chunk_audio(wav_infilepath, chunk_size)
+    for i, np_chunk in enumerate(chunks):
+        fpath = os.path.abspath(os.path.join(chunks_outdir, f"{wavname}_{i}.wav"))
+        if not os.path.exists(fpath):
+            scipy.io.wavfile.write(fpath, rate, np_chunk)
+
+
+def chunk_audio(wav_filepath, chunk_size=WAV_CHUNK_SIZE):
+
+    rate, np_audio = scipy.io.wavfile.read(wav_filepath)
     np_audio = np_audio.flatten()
     length = np_audio.shape[0]
     i = 0
@@ -27,21 +36,27 @@ def chunk_audio(wav_infilepath,
         np_chunk = np_audio[i: i + chunk_size]
         chunks.append(np_chunk)
         i += chunk_size
-        fpath = os.path.abspath(os.path.join(chunks_outdir, f"{wavname}_{i}.wav"))
-        if not os.path.exists(fpath):
-            scipy.io.wavfile.write(fpath, rate, np_chunk)
+    return rate, chunks
 
 
-def chunks_to_torch_tensor(chunks_dir):
-    return torch.tensor(chunks_to_numpy(chunks_dir)).float()
+def chunks_to_torch_tensor(chunks):
+    return torch.tensor(chunks_to_numpy(chunks)).float()
 
 
-def chunks_to_numpy(chunks_dir):
+def chunks_dir_to_torch_tensor(chunks_dir):
+    return torch.tensor(chunks_dir_to_numpy(chunks_dir)).float()
+
+
+def chunks_dir_to_numpy(chunks_dir):
     chunks = []
     for fp in sorted(os.listdir(chunks_dir)):
         rate, v = scipy.io.wavfile.read(os.path.join(chunks_dir, fp))
-        chunks.append(normalize_np_vector(v))
-    return np.vstack(chunks)
+        chunks.append(v)
+    return chunks_to_numpy(chunks)
+
+
+def chunks_to_numpy(chunks):
+    return np.vstack([normalize_np_vector(v) for v in chunks])
 
 
 def normalize_np_vector(v):
