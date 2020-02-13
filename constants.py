@@ -19,4 +19,11 @@ ENCODED_BITSEQ_LENGTH = 15
 LOCAL_WAV_FILEPATHS = "wavs"
 LOCAL_CHUNK_FILEPATHS = "chunks"
 
-MODEL_SAVE_PATH = "model/model.pth"
+MODEL_SAVE_DIR = "model"
+MODEL_SAVE_PATH = f"{MODEL_SAVE_DIR}/model.pth"
+
+INDEX_DIR = "index"
+INDEX_SAVE_PATH = f"{INDEX_DIR}/index.ann"
+ID_MAPPING_SAVE_PATH = f"{INDEX_DIR}/ids.pkl"
+
+INDEX_NUM_TREES = 10  # how to choose?

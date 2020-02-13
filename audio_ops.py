@@ -3,6 +3,7 @@ import os
 import urllib.request
 import numpy as np
 import scipy.io.wavfile
+import torch
 
 from constants import LOCAL_CHUNK_FILEPATHS, \
     LOCAL_WAV_FILEPATHS, WAV_CHUNK_SIZE
@@ -31,9 +32,13 @@ def chunk_audio(wav_infilepath,
             scipy.io.wavfile.write(fpath, rate, np_chunk)
 
 
+def chunks_to_torch_tensor(chunks_dir):
+    return torch.tensor(chunks_to_numpy(chunks_dir)).float()
+
+
 def chunks_to_numpy(chunks_dir):
     chunks = []
-    for fp in os.listdir(chunks_dir):
+    for fp in sorted(os.listdir(chunks_dir)):
         rate, v = scipy.io.wavfile.read(os.path.join(chunks_dir, fp))
         chunks.append(normalize_np_vector(v))
     return np.vstack(chunks)

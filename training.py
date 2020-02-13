@@ -1,4 +1,6 @@
 # training.py
+
+import os
 import tensorflow as tf
 import torch
 from pytorch_sh import SemanticHashing, \
@@ -6,7 +8,8 @@ from pytorch_sh import SemanticHashing, \
 
 from semantic_hashing import SemanticHashing
 from constants import WAV_CHUNK_SIZE, \
-    ENCODED_BITSEQ_LENGTH, LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_PATH
+    ENCODED_BITSEQ_LENGTH, LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR, \
+    MODEL_SAVE_PATH
 
 from audio_ops import chunks_to_numpy
 
@@ -30,6 +33,9 @@ def train(batch_size, n_epochs):
 
 
 def train_pytorch(batch_size, n_epochs):
+
+    if not os.path.exists(MODEL_SAVE_DIR):
+        os.mkdir(MODEL_SAVE_DIR)
 
     x_train = torch.tensor(chunks_to_numpy(LOCAL_CHUNK_FILEPATHS)).float()
     assert x_train.shape[1] == WAV_CHUNK_SIZE, \
@@ -70,13 +76,3 @@ def train_pytorch(batch_size, n_epochs):
             torch.save(model, MODEL_SAVE_PATH)
 
 
-def inference(x):
-
-    model = torch.load(MODEL_SAVE_PATH)
-    binary_enc = model.binary_encoding(x)
-    return binary_enc
-
-
-
-#train_pytorch(batch_size=300, n_epochs=1000)
-inference()

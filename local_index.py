@@ -7,8 +7,17 @@
     to be identified by an integer
 """
 from annoy import AnnoyIndex
+import os
+import pickle
+import torch
 
-from constants import ENCODED_BITSEQ_LENGTH
+from audio_ops import chunks_to_torch_tensor
+from constants import ENCODED_BITSEQ_LENGTH, \
+    LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_PATH, \
+    INDEX_DIR, INDEX_SAVE_PATH, ID_MAPPING_SAVE_PATH,\
+    INDEX_NUM_TREES
+
+
 
 # example use
 # import random
@@ -31,8 +40,33 @@ from constants import ENCODED_BITSEQ_LENGTH
 #
 
 
-def build_index():
-    pass
+def create_index():
+
+    index = initialize_index()
+    x = chunks_to_torch_tensor(LOCAL_CHUNK_FILEPATHS)
+    id_mapping = int_id_mapping()
+    with open(ID_MAPPING_SAVE_PATH, 'wb') as handle:
+        pickle.dump(dict(id_mapping), handle,
+                    protocol=pickle.HIGHEST_PROTOCOL)
+    binary_enc = run_inference(x)
+    N = binary_enc.size()[0]
+    for i in range(N):
+        add_to_index(index=index,
+                     int_id=i,
+                     bitseq=binary_enc[i])
+    build_index(index, INDEX_NUM_TREES)
+    save_to_disk(index, INDEX_SAVE_PATH)
+
+
+def run_inference(x):
+    model = torch.load(MODEL_SAVE_PATH)
+    binary_enc = model.binary_encoding(x)
+    return binary_enc
+
+
+def int_id_mapping():
+    chunks = sorted(os.listdir(LOCAL_CHUNK_FILEPATHS))
+    return enumerate(chunks)
 
 
 def initialize_index():
@@ -67,4 +101,7 @@ def query_by_id(index, int_id, n):
 def query_by_vector(index, v, n):
     # query n nearest neighbors passing a vector
     pass
+
+
+create_index()
 

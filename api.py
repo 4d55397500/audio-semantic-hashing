@@ -55,11 +55,11 @@ def index():
     using their binary encoding given by the model
     """
     if request.method == "POST":
-        local_index.build_index()
+        local_index.create_index()
         return jsonify({'status': 'success'})
 
 
-@app.route("/search", method=["GET"])
+@app.route("/search", methods=["GET"])
 def search():
     """ Search for nearest matching elements in the index,
     by chunking a passed audio wav and querying the index

@@ -37,6 +37,12 @@ class TestApi(unittest.TestCase):
         assert 'status' in content
         assert content['status'] == 'success'
 
+    def test_index(self):
+        response = self.app.post('/index')
+        content = response.json
+        assert 'status' in content
+        assert content['status'] == 'success'
+
 
 if __name__ == "__main__":
     unittest.main()
