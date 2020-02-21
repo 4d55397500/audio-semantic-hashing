@@ -33,7 +33,14 @@ Currently using the Spotify [annoy](https://github.com/spotify/annoy) library to
 
 Requirements
 --
-See the `requirements.txt`
+* Python 3
+* See `requirements.txt`. 
+
+Tests
+---
+From the project root run
+
+```python3 -m unittest discover```
 
 API
 --
@@ -42,5 +49,5 @@ API
 * `/add`: add wav files and create chunks
 * `/train`: train semantic hashing model over local wav files
 * `/index`: index existing audio chunks in local directory using their learned binary encoding
-* `/search`: search for 
+* `/search`: search for nearest matching elements in the index, by chunking a passed audio wav and querying the index for each such chunk
 
