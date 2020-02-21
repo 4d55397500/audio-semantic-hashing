@@ -20,33 +20,13 @@ from constants import ENCODED_BITSEQ_LENGTH, \
     INDEX_NUM_TREES, WAV_CHUNK_SIZE
 
 
-
-# example use
-# import random
-#
-#
-# f = 40
-# t = AnnoyIndex(f, 'angular')  # Length of item vector that will be indexed
-# for i in range(1000):
-#     v = [random.gauss(0, 1) for z in range(f)]
-#     t.add_item(i, v)
-#
-# t.build(10)  # 10 trees
-# t.save('test.ann')
-#
-# # ...
-#
-# u = AnnoyIndex(f, 'angular')
-# u.load('test.ann')  # super fast, will just mmap the file
-# print(u.get_nns_by_item(0, 1000))  # will find the 1000 nearest neighbors
-#
-
-
 def create_index():
 
     index = initialize_index()
     x = chunks_dir_to_torch_tensor(LOCAL_CHUNK_FILEPATHS)
     id_mapping = int_id_mapping()
+    if not os.path.exists(ID_MAPPING_SAVE_PATH):
+        os.mkdir(ID_MAPPING_SAVE_PATH)
     with open(ID_MAPPING_SAVE_PATH, 'wb') as handle:
         pickle.dump(dict(id_mapping), handle,
                     protocol=pickle.HIGHEST_PROTOCOL)
