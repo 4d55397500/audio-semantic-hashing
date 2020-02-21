@@ -18,15 +18,18 @@ from constants import ENCODED_BITSEQ_LENGTH, \
     LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_PATH, \
     INDEX_DIR, INDEX_SAVE_PATH, ID_MAPPING_SAVE_PATH,\
     INDEX_NUM_TREES, WAV_CHUNK_SIZE
+from custom_exceptions import ModelNotFoundException
 
 
 def create_index():
 
+    if not os.path.exists(MODEL_SAVE_PATH):
+        raise ModelNotFoundException
     index = initialize_index()
     x = chunks_dir_to_torch_tensor(LOCAL_CHUNK_FILEPATHS)
     id_mapping = int_id_mapping()
-    if not os.path.exists(ID_MAPPING_SAVE_PATH):
-        os.mkdir(ID_MAPPING_SAVE_PATH)
+    if not os.path.exists(INDEX_DIR):
+        os.mkdir(INDEX_DIR)
     with open(ID_MAPPING_SAVE_PATH, 'wb') as handle:
         pickle.dump(dict(id_mapping), handle,
                     protocol=pickle.HIGHEST_PROTOCOL)

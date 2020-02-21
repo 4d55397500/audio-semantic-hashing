@@ -2,6 +2,7 @@ import unittest
 
 import api
 import constants
+unittest.TestLoader.sortTestMethodsUsing = None
 
 
 class TestApi(unittest.TestCase):
@@ -41,7 +42,8 @@ class TestApi(unittest.TestCase):
         response = self.app.post('/index')
         content = response.json
         assert 'status' in content
-        assert content['status'] == 'success'
+        assert content['status'] == 'success' \
+            or content['status'] == 'model not found'
 
     def test_search(self):
         test_wav = "test_resources/test.wav"

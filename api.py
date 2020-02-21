@@ -12,9 +12,16 @@ import audio_ops
 import local_index
 import training
 import constants
-
+import custom_exceptions
 
 app = Flask(__name__)
+
+@app.before_first_request
+def activate_job():
+    if not os.path.exists(constants.MODEL_SAVE_DIR):
+        os.mkdir(constants.MODEL_SAVE_DIR)
+    if not os.path.exists(constants.INDEX_DIR):
+        os.mkdir(constants.INDEX_DIR)
 
 
 @app.route('/datasetinfo', methods=['GET'])
@@ -57,8 +64,11 @@ def index():
     using their binary encoding given by the model
     """
     if request.method == "POST":
-        local_index.create_index()
-        return jsonify({'status': 'success'})
+        try:
+            local_index.create_index()
+            return jsonify({'status': 'success'})
+        except custom_exceptions.ModelNotFoundException:
+            return jsonify({'status': 'model not found'})
 
 
 @app.route("/search", methods=["POST"])
@@ -72,8 +82,6 @@ def search():
         wav_bytes = wav.read()
         local_index.run_search(wav_bytes)
         return jsonify({'something': 123})
-
-
 
 
 
