@@ -16,8 +16,21 @@ The sigmoid saturated output constitutes a binary compressed representation of t
 An index over binary compressed representations of audio chunks facilitates neighbor
 search using a hamming distance.
 
+Implementation
+---
+#### Pre-processing
+Ideally pre-process as done in Wavenet, with mu transform
+
+#### Autoencoder
+The current implementation consists of dense encoders and decoders.
+More appropriate for audio timeseries would be a convolutional autoencoder.
+
+#### Indexing
+Currently using the Spotify annoy library to index binary codes and run local search by the Hamming distance criterion.
+
 Requirements
 --
+See the `requirements.txt`
 
 API
 --

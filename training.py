@@ -1,9 +1,8 @@
 # training.py
 
 import os
-import tensorflow as tf
 import torch
-from pytorch_sh import SemanticHashing, \
+from semantic_hashing import SemanticHashing, \
         DenseEncoder, DenseDecoder
 
 # from semantic_hashing import SemanticHashing
@@ -13,23 +12,6 @@ from constants import WAV_CHUNK_SIZE, \
 
 from audio_ops import chunks_dir_to_numpy
 
-
-# def train(batch_size, n_epochs):
-#
-#     x_train = chunks_dir_to_numpy(LOCAL_CHUNK_FILEPATHS)
-#     assert x_train.shape[1] == WAV_CHUNK_SIZE, \
-#         "incorrect training input dimensions"
-#
-#     tf.compat.v1.disable_eager_execution()
-#
-#     model = SemanticHashing(
-#         xdim=WAV_CHUNK_SIZE,
-#         hdim=ENCODED_BITSEQ_LENGTH)
-#     model.train(
-#         x_train=x_train,
-#         batch_size=batch_size,
-#         n_epochs=n_epochs)
-#     return model
 
 
 def train_pytorch(batch_size, n_epochs):

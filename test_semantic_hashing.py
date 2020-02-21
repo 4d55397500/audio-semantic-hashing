@@ -1,8 +1,7 @@
-import tensorflow as tf
 import unittest
 
 
-class TestAudioSemanticHashing(unittest.TestCase):
+class TestSemanticHashing(unittest.TestCase):
 
     def setUp(self):
         pass
