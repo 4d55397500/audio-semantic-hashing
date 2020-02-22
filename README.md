@@ -22,11 +22,11 @@ This project is for the purpose of demonstrating semantic hashing. A more approp
 Implementation
 ---
 #### Pre-processing
-Ideally pre-process as done in Wavenet, with mu transform
+Ideally pre-process as done in Wavenet, with mu transform. Currently pre-processing consists solely of normalizing the numpy vector for each chunk.
 
 #### Autoencoder
 The current implementation consists of dense encoders and decoders.
-More appropriate for audio timeseries would be a convolutional autoencoder.
+A convolutional autoencoder (tbd) would be more appropriate for audio.
 
 #### Indexing
 Currently using the Spotify [annoy](https://github.com/spotify/annoy) library to index binary codes and run local search by the Hamming distance criterion.
