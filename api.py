@@ -18,6 +18,7 @@ app = Flask(__name__)
 
 @app.before_first_request
 def activate_job():
+    print("making directories...")
     if not os.path.exists(constants.LOCAL_CHUNK_FILEPATHS):
         os.mkdir(constants.LOCAL_CHUNK_FILEPATHS)
     if not os.path.exists(constants.MODEL_SAVE_DIR):
@@ -82,8 +83,12 @@ def search():
     if request.method == "POST":
         wav = request.files['file']
         wav_bytes = wav.read()
-        results = local_index.run_search(wav_bytes)
-        return jsonify({'results': results})
+        try:
+            results = local_index.run_search(wav_bytes)
+            return jsonify({'results': results})
+        except custom_exceptions.IndexNotFoundException:
+            print("Index does not exist")
+            return jsonify({'results': []})
 
 
 if __name__ == "__main__":

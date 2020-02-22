@@ -20,7 +20,8 @@ from constants import ENCODED_BITSEQ_LENGTH, \
     LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_PATH, \
     INDEX_DIR, INDEX_SAVE_PATH, ID_MAPPING_SAVE_PATH,\
     INDEX_NUM_TREES, WAV_CHUNK_SIZE
-from custom_exceptions import ModelNotFoundException, IdMappingNotFoundException
+from custom_exceptions import ModelNotFoundException, \
+    IndexNotFoundException
 
 
 def create_index():
@@ -59,6 +60,8 @@ def run_search(wav_bytes, n_neighbors=2, top_k=5):
     :param top_k:
     :return:
     """
+    if not os.path.exists(INDEX_SAVE_PATH):
+        raise IndexNotFoundException
     index = load_from_disk(INDEX_SAVE_PATH)
     fp = io.BytesIO(wav_bytes)
     _, chunks = chunk_audio(fp, chunk_size=WAV_CHUNK_SIZE)
@@ -96,11 +99,14 @@ def run_inference(x):
 
 
 def print_index_statistics(binary_enc):
-    n_unique = torch.unique(binary_enc, dim=0).size()[0]
+    _, counts = torch.unique(binary_enc, dim=0, return_counts=True)
+    n_unique = counts.size()[0]
+    probs = counts * 1. / torch.sum(counts)
+    index_entropy = -torch.sum(probs * torch.log(probs))
     print(f"""
        index statistics:
            entropy: {index_entropy}
-           num. unique rows: {n_unique} / {x.size()[0]}
+           num. unique rows: {n_unique} / {binary_enc.size()[0]}
        """)
 
 
