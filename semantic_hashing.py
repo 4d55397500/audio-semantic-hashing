@@ -5,6 +5,7 @@
 """
 import torch
 
+
 import constants
 
 
@@ -28,10 +29,11 @@ class SemanticHashing(torch.nn.Module):
         z = torch.sigmoid(self.encoder.forward(x))
         return (z > threshold).float() * 1
 
-    # TODO("implement")
     def encoded_entropy(self, x):
         binary_enc = self.binary_encoding(x)
-        # return entropy of binary_enc
+        _, row_counts = torch.unique(binary_enc, return_counts=True, dim=0)
+        probs = row_counts * 1. / torch.sum(row_counts)
+        return -torch.sum(probs * torch.log(probs))
 
     def forward(self, x):
         enc_x = self.encoder.forward(x)

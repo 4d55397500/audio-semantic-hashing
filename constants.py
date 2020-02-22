@@ -1,6 +1,6 @@
 # constants.py
 
-WAV_CHUNK_SIZE = 10000
+WAV_CHUNK_SIZE = 1000
 SAMPLE_AUDIO = {
     "harpsichord": ["https://ccrma.stanford.edu/~jos/wav/harpsi-cs.wav",
                     "https://ccrma.stanford.edu/~jos/wav/Harpsichord.wav"],
@@ -14,7 +14,7 @@ INITIAL_NOISE_STD = 0.2
 NOISE_MULTIPLICATIVE_INCREMENT = 1. + 1e-5
 
 # length of encoded bit sequence representation
-ENCODED_BITSEQ_LENGTH = 15
+ENCODED_BITSEQ_LENGTH = 100
 
 LOCAL_WAV_FILEPATHS = "wavs"
 LOCAL_CHUNK_FILEPATHS = "chunks"

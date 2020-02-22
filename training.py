@@ -5,7 +5,6 @@ import torch
 from semantic_hashing import SemanticHashing, \
         DenseEncoder, DenseDecoder
 
-# from semantic_hashing import SemanticHashing
 from constants import WAV_CHUNK_SIZE, \
     ENCODED_BITSEQ_LENGTH, LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR, \
     MODEL_SAVE_PATH
@@ -47,14 +46,18 @@ def train_pytorch(batch_size, n_epochs):
                 indices = permutation[i:i+batch_size]
             batch_x = x_train[indices]
             output = model.forward(batch_x)
+            encoded_entropy = model.encoded_entropy(batch_x)
             loss = criterion(output, batch_x)
             epoch_loss += loss.item()
             loss.backward()
             optimizer.step()
             noise_sigma = model.noise_sigma
         if epoch % 10 == 0:
-            print(f"epoch: {epoch} epoch loss: {epoch_loss} noise sigma: {noise_sigma}")
+            print(f"""
+            epoch: {epoch} epoch loss: {epoch_loss} 
+            noise sigma: {noise_sigma}
+            encoded entropy: {encoded_entropy}
+            """)
             print(f"saving model to {MODEL_SAVE_PATH}")
+            print("-" * 20)
             torch.save(model, MODEL_SAVE_PATH)
-
-

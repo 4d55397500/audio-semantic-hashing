@@ -1,3 +1,6 @@
+import base64
+import io
+import scipy
 import unittest
 
 import api
@@ -54,6 +57,15 @@ class TestApi(unittest.TestCase):
             response = self.app.post('/search',
                                      data=data,
                                      content_type='multipart/form-data')
+            content = response.json
+            assert 'results' in content
+            for wav_str, distance in content['results']:
+                wav_bytes = base64.b64decode(wav_str)
+                fp = io.BytesIO(wav_bytes)
+                # test can read wav bytes
+                rate, np_audio = scipy.io.wavfile.read(fp)
+                assert rate == 48000, "incorrect rate"
+                assert distance >= 1.0, "invalid distance"
 
 
 if __name__ == "__main__":

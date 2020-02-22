@@ -4,7 +4,6 @@
     then trains and writes to index
 
 """
-import io
 from flask import Flask, jsonify, request
 import os
 
@@ -16,8 +15,11 @@ import custom_exceptions
 
 app = Flask(__name__)
 
+
 @app.before_first_request
 def activate_job():
+    if not os.path.exists(constants.LOCAL_CHUNK_FILEPATHS):
+        os.mkdir(constants.LOCAL_CHUNK_FILEPATHS)
     if not os.path.exists(constants.MODEL_SAVE_DIR):
         os.mkdir(constants.MODEL_SAVE_DIR)
     if not os.path.exists(constants.INDEX_DIR):
@@ -80,9 +82,8 @@ def search():
     if request.method == "POST":
         wav = request.files['file']
         wav_bytes = wav.read()
-        local_index.run_search(wav_bytes)
-        return jsonify({'something': 123})
-
+        results = local_index.run_search(wav_bytes)
+        return jsonify({'results': results})
 
 
 if __name__ == "__main__":
