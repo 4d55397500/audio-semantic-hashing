@@ -31,6 +31,10 @@ A convolutional autoencoder (tbd) would be more appropriate for audio.
 #### Indexing
 Currently using the Spotify [annoy](https://github.com/spotify/annoy) library to index binary codes and run local search by the Hamming distance criterion.
 
+#### Parameters
+
+Specifiable parameters are stored in `constants.py`. These include values determining the audio pre-processing, as well as neural network and index structures.
+
 Requirements
 --
 * Python 3
