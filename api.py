@@ -87,7 +87,7 @@ def search():
         wav = request.files['file']
         wav_bytes = wav.read()
         try:
-            results = local_index.run_search(wav_bytes)
+            results = local_index.run_search(wav_bytes, n_neighbors=10, top_k=10)
             return jsonify({'results': results})
         except custom_exceptions.IndexNotFoundException:
             print("Index does not exist")

@@ -1,5 +1,6 @@
 import unittest
 import base64
+import io
 
 import local_index
 import training
@@ -28,7 +29,9 @@ class TestLocalIndex(unittest.TestCase):
         for k, v in results:
             assert v >= 0., 'negative distance in search result'
             try:
-                base64.b64decode(k)
+                wav_bytes = base64.b64decode(k)
+                fp = io.BytesIO(wav_bytes)
+                # test can read wav bytes
             except:
                 self.fail("unable to decode base64 encoded key from string to bytes")
 

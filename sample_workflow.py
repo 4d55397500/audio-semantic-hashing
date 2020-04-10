@@ -1,29 +1,25 @@
 # sample_workflow.py
 
 import requests
+import json
 
 HOST = 'http://localhost:5000'
-#
-# resp = requests.get(f'{HOST}/datasetinfo')
-# print(resp.content)
-#
-#
-# resp2 = requests.post(f'{HOST}/add',
-#                       json={'filepaths': []})
-# print(resp2.content)
-#
-#
-# resp3 = requests.post(f'{HOST}/train',
-#                       json={'n_epochs': 10})
-# print(resp3.content)
-#
-# resp4 = requests.post(f'{HOST}/index',
-#                       json={})
-# print(resp4.content)
+SAMPLE_SEARCH_CHUNK = 'chunks/0_0_0_0_1_1_1_1_2.wav'
 
-sample_search_chunk = 'chunks/0_0_0_0_1_1_1_1_2.wav'
-files = {'file': open(sample_search_chunk, 'rb')}
-resp5 = requests.post(f'{HOST}/search',
-                      files=files)
-print(resp5.content)
+requests.get(f'{HOST}/datasetinfo')
+requests.post(f'{HOST}/add',
+                      json={'filepaths': []})
+requests.post(f'{HOST}/train',
+                      json={'n_epochs': 100})
+requests.post(f'{HOST}/index',
+                      json={})
+
+with open(SAMPLE_SEARCH_CHUNK, 'rb') as handle:
+    files = {'file': handle }
+    resp5 = requests.post(f'{HOST}/search',
+                          files=files)
+    results = json.loads(resp5.content)['results']
+    for e in results:
+        wav_bytes, distance = tuple(e)
+        print(f"Found matched chunk: {wav_bytes[:10]}... distance: {distance}")
 
