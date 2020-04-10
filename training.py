@@ -6,7 +6,7 @@ from semantic_hashing import SemanticHashing, \
         DenseEncoder, DenseDecoder
 
 from constants import WAV_CHUNK_SIZE, \
-    ENCODED_BITSEQ_LENGTH, LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR, \
+    LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR, \
     MODEL_SAVE_PATH
 
 from audio_ops import chunks_dir_to_numpy
@@ -54,11 +54,15 @@ def train_pytorch(batch_size, n_epochs):
             noise_sigma = model.noise_sigma
         if epoch % 10 == 0:
             print(f"""
-            epoch: {epoch} epoch loss: {epoch_loss} 
+            epoch: {epoch} epoch loss: {epoch_loss}
             noise sigma: {noise_sigma}
             encoded entropy: {encoded_entropy}
             """)
             print(f"saving model to {MODEL_SAVE_PATH}")
             print("-" * 20)
             torch.save(model, MODEL_SAVE_PATH)
+
+
+if __name__ == "__main__":
+    train_pytorch(batch_size=300, n_epochs=100)
 

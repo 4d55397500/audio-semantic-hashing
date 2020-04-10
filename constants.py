@@ -16,7 +16,7 @@ NOISE_MULTIPLICATIVE_INCREMENT = 1. + 1e-5
 # length of encoded bit sequence representation
 ENCODED_BITSEQ_LENGTH = 100
 
-LOCAL_WAV_FILEPATHS = "wavs"
+LOCAL_WAV_FILEPATHS = "waves_yesno"
 LOCAL_CHUNK_FILEPATHS = "chunks"
 
 MODEL_SAVE_DIR = "model"
@@ -30,3 +30,4 @@ INDEX_NUM_TREES = 100  # how to choose?
 
 LOCAL_SEARCH_CHUNKS_DIR = "tmp"
 TEST_RESOURCES_DIR = "test_resources"
+

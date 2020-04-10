@@ -13,6 +13,7 @@ import training
 import constants
 import custom_exceptions
 
+
 app = Flask(__name__)
 
 
@@ -31,7 +32,7 @@ def activate_job():
 def dataset_info():
     """ returns the number of wav files and chunks present locally """
     if request.method == "GET":
-        num_wavs = len(os.listdir("./wavs"))
+        num_wavs = len(os.listdir(constants.LOCAL_WAV_FILEPATHS))
         num_chunks = len(os.listdir("./chunks"))
         return jsonify(({'num_wavs': num_wavs, 'num_chunks': num_chunks}))
 
@@ -42,7 +43,8 @@ def add():
     if request.method == "POST":
         content = request.json
         remote_filepaths = content["filepaths"]
-        local_filepaths = audio_ops.download_wav_files(remote_filepaths)
+        #local_filepaths = audio_ops.download_wav_files(remote_filepaths)
+        local_filepaths = audio_ops.download_yes_no()
         for wav_fp in local_filepaths:
             audio_ops.chunk_write_audio(wav_fp)
         return jsonify({'status': 'success',

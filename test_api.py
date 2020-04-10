@@ -27,8 +27,8 @@ class TestApi(unittest.TestCase):
                                  json={"filepaths": self.remote_file_paths})
         content = response.json
         assert 'local_filepaths' in content, 'missing response key'
-        assert 'wavs/harpsi-cs.wav' in content['local_filepaths'], 'missing wav'
-        assert 'wavs/cello.wav' in content['local_filepaths'], 'missing wav'
+        assert 'waves_yesno/0_0_0_0_1_1_1_1.wav' in content['local_filepaths'], 'missing wav'
+
 
     def test_dataset_info(self):
         response = self.app.get("/datasetinfo")

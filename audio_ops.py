@@ -93,3 +93,9 @@ def download_wav_files(remote_filepaths,
 
 
 
+def download_yes_no():
+    import sample_datasets
+    sample_datasets.download_yes_no()
+    return [os.path.join('waves_yesno', name) for name in os.listdir('./waves_yesno') if
+            name.endswith('.wav')]
+
