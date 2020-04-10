@@ -2,8 +2,9 @@
 
 import os
 import torch
-from semantic_hashing import SemanticHashing, \
-        DenseEncoder, DenseDecoder
+from semantic_hashing import SemanticHashing
+from conv_decoder import ConvDecoder
+from conv_encoder import ConvEncoder
 
 from constants import WAV_CHUNK_SIZE, \
     LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR, \
@@ -12,17 +13,22 @@ from constants import WAV_CHUNK_SIZE, \
 from audio_ops import chunks_dir_to_numpy
 
 
+def loss_criterion(output, target):
+    output = output.int()
+    print(output)
+    print(target)
+
+
 def train_pytorch(batch_size, n_epochs):
 
     if not os.path.exists(MODEL_SAVE_DIR):
         os.mkdir(MODEL_SAVE_DIR)
 
-    x_train = torch.tensor(chunks_dir_to_numpy(LOCAL_CHUNK_FILEPATHS)).float()
-    assert x_train.shape[1] == WAV_CHUNK_SIZE, \
-        "incorrect training input dimensions"
+    x_train = torch.tensor(
+        chunks_dir_to_numpy(LOCAL_CHUNK_FILEPATHS)).float().unsqueeze(dim=1)
 
-    de = DenseEncoder()
-    dd = DenseDecoder()
+    de = ConvEncoder()
+    dd = ConvDecoder()
     model = SemanticHashing(
         encoder=de,
         decoder=dd
@@ -35,6 +41,7 @@ def train_pytorch(batch_size, n_epochs):
     for epoch in range(n_epochs):
         permutation = torch.randperm(N)
         epoch_loss = 0.
+        n_batches = N / batch_size
         for i in range(0, N, batch_size):
             optimizer.zero_grad()
             if i + batch_size >= N:
@@ -52,8 +59,9 @@ def train_pytorch(batch_size, n_epochs):
             optimizer.step()
             noise_sigma = model.noise_sigma
         if epoch % 10 == 0:
+            loss_criterion(output, target=batch_x)
             print(f"""
-            epoch: {epoch} epoch loss: {epoch_loss}
+            epoch: {epoch} epoch loss: {epoch_loss / n_batches}
             noise sigma: {noise_sigma}
             encoded entropy: {encoded_entropy}
             """)

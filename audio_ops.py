@@ -63,9 +63,9 @@ def chunks_to_numpy(chunks):
     return z
 
 
-def mu_transform(v):
+def mu_transform(v, quantization_channels=256):
     return torchaudio.functional.mu_law_encoding(torch.tensor(v),
-                                                 quantization_channels=256)\
+                                                 quantization_channels=quantization_channels)\
         .float().data.numpy()
 
 

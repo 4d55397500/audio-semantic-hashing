@@ -9,7 +9,7 @@ SAMPLE_AUDIO = {
     "piano": ["https://ccrma.stanford.edu/~jos/wav/pno-cs.wav"]
 }
 
-INTERMEDIATE_LAYER_DIMS = [20, 10, 10]
+NUM_CONV_LAYERS = 3
 INITIAL_NOISE_STD = 0.2
 NOISE_MULTIPLICATIVE_INCREMENT = 1. + 1e-5
 

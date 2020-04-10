@@ -1,5 +1,6 @@
 import os
 import unittest
+import torch
 
 import audio_ops
 import constants
@@ -17,6 +18,12 @@ class TestAudioOps(unittest.TestCase):
         audio_ops.chunk_write_audio("./test_resources/test.wav",
                                     "./chunks",
                                     constants.WAV_CHUNK_SIZE)
+
+    def test_mu_transform(self):
+        x = torch.randn(2, 1, 100)
+        mu_x = audio_ops.mu_transform(x,
+                                      quantization_channels=256)
+        print(mu_x)
 
     def test_chunks_to_numpy(self):
         x = audio_ops.chunks_dir_to_numpy(constants.LOCAL_CHUNK_FILEPATHS)
