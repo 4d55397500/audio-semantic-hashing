@@ -61,3 +61,4 @@ def train_pytorch(batch_size, n_epochs):
             print(f"saving model to {MODEL_SAVE_PATH}")
             print("-" * 20)
             torch.save(model, MODEL_SAVE_PATH)
+

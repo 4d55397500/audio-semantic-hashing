@@ -4,6 +4,7 @@ import urllib.request
 import numpy as np
 import scipy.io.wavfile
 import torch
+import torchaudio
 
 from constants import LOCAL_CHUNK_FILEPATHS, \
     LOCAL_WAV_FILEPATHS, WAV_CHUNK_SIZE
@@ -56,7 +57,13 @@ def chunks_dir_to_numpy(chunks_dir):
 
 
 def chunks_to_numpy(chunks):
-    return np.vstack([normalize_np_vector(v) for v in chunks])
+    return np.vstack([mu_transform(v) for v in chunks])
+
+
+def mu_transform(v):
+    return torchaudio.functional.mu_law_encoding(torch.tensor(v),
+                                                 quantization_channels=256)\
+        .float().data.numpy()
 
 
 def normalize_np_vector(v):
