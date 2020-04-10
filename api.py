@@ -42,6 +42,7 @@ def add():
     """ Add wav files and create chunks"""
     if request.method == "POST":
         content = request.json
+        print(content)
         remote_filepaths = content["filepaths"]
         #local_filepaths = audio_ops.download_wav_files(remote_filepaths)
         local_filepaths = audio_ops.download_yes_no()

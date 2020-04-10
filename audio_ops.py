@@ -6,6 +6,7 @@ import scipy.io.wavfile
 import torch
 import torchaudio
 
+
 from constants import LOCAL_CHUNK_FILEPATHS, \
     LOCAL_WAV_FILEPATHS, WAV_CHUNK_SIZE
 
@@ -33,7 +34,7 @@ def chunk_audio(wav_filepath, chunk_size=WAV_CHUNK_SIZE):
     length = np_audio.shape[0]
     i = 0
     chunks = []
-    while i + chunk_size < length:
+    while i + chunk_size <= length:
         np_chunk = np_audio[i: i + chunk_size]
         chunks.append(np_chunk)
         i += chunk_size
@@ -57,7 +58,9 @@ def chunks_dir_to_numpy(chunks_dir):
 
 
 def chunks_to_numpy(chunks):
-    return np.vstack([mu_transform(v) for v in chunks])
+    mu_chunks = list(mu_transform(v) for v in chunks)
+    z = np.array(mu_chunks)
+    return z
 
 
 def mu_transform(v):

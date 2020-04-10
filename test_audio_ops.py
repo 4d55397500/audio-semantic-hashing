@@ -14,7 +14,7 @@ class TestAudioOps(unittest.TestCase):
         pass
 
     def test_chunk_write_audio(self):
-        audio_ops.chunk_write_audio("./waves_yesno/0_0_0_0_1_1_1_1.wav",
+        audio_ops.chunk_write_audio("./test_resources/test.wav",
                                     "./chunks",
                                     constants.WAV_CHUNK_SIZE)
 
@@ -27,3 +27,5 @@ class TestAudioOps(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+

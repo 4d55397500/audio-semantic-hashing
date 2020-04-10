@@ -12,7 +12,6 @@ from constants import WAV_CHUNK_SIZE, \
 from audio_ops import chunks_dir_to_numpy
 
 
-
 def train_pytorch(batch_size, n_epochs):
 
     if not os.path.exists(MODEL_SAVE_DIR):
@@ -41,7 +40,7 @@ def train_pytorch(batch_size, n_epochs):
             if i + batch_size >= N:
                 k = i + batch_size - N
                 indices = torch.cat((permutation[i:], permutation[:k]), 0)
-                assert (len(indices) == batch_size)
+                #assert (len(indices) == batch_size)
             else:
                 indices = permutation[i:i+batch_size]
             batch_x = x_train[indices]
