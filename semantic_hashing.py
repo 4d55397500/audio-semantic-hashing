@@ -30,7 +30,7 @@ class SemanticHashing(torch.nn.Module):
         return (z > threshold).float() * 1
 
     def encoded_entropy(self, x):
-        binary_enc = self.binary_encoding(x)[:, 0, :]
+        binary_enc = self.binary_encoding(x).int()
         _, row_counts = torch.unique(binary_enc, return_counts=True, dim=0)
         probs = row_counts * 1. / torch.sum(row_counts)
         return -torch.sum(probs * torch.log(probs))
@@ -42,3 +42,7 @@ class SemanticHashing(torch.nn.Module):
         return self.decoder(torch.sigmoid(z))
 
 
+def row_entropy(tensor):
+    _, row_counts = torch.unique(tensor, return_counts=True, dim=0)
+    probs = row_counts * 1. / torch.sum(row_counts)
+    return -torch.sum(probs * torch.log(probs))

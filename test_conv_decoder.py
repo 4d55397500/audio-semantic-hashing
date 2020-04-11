@@ -3,7 +3,6 @@
 import torch
 import unittest
 
-import constants
 from conv_decoder import ConvDecoder
 
 
@@ -11,14 +10,11 @@ class TestConvDecoder(unittest.TestCase):
 
     def setUp(self):
         self.cd = ConvDecoder()
+        self.z = torch.ones(10, 100)
 
     def test_forward(self):
-        x = torch.Tensor([[1.] * constants.ENCODED_BITSEQ_LENGTH,
-                          [0.] * constants.ENCODED_BITSEQ_LENGTH]).unsqueeze(dim=1)
-        assert x.shape == (2, 1, constants.ENCODED_BITSEQ_LENGTH)
-        y = self.cd(x)
-        assert y.shape == (2, 1, constants.WAV_CHUNK_SIZE)
-
+        x = self.cd(self.z)
+        assert x.shape == (10, 256, 1000)
 
 
 if __name__ == "__main__":

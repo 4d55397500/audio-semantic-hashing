@@ -1,8 +1,7 @@
 import unittest
-from semantic_hashing import SemanticHashing
+from semantic_hashing import SemanticHashing, row_entropy
 from conv_decoder import ConvDecoder
 from conv_encoder import ConvEncoder
-import constants
 
 import torch
 
@@ -10,33 +9,31 @@ import torch
 class TestSemanticHashing(unittest.TestCase):
 
     def setUp(self):
-        de = ConvEncoder()
-        dd = ConvDecoder()
         self.model = SemanticHashing(
-            encoder=de,
-            decoder=dd
+            encoder=ConvEncoder(),
+            decoder=ConvDecoder(),
         )
-
-    def tearDown(self):
-        pass
+        self.x = torch.ones(10, 256, 1000)
 
     def test_forward(self):
-        x = torch.Tensor([[1.] * constants.WAV_CHUNK_SIZE,
-                          [0.] * constants.WAV_CHUNK_SIZE]).unsqueeze(dim=1)
-        num_channels = 1
-        assert x.shape == (2, num_channels, constants.WAV_CHUNK_SIZE)
-        x_pred = self.model(x)
-        assert x_pred.shape == (2, num_channels, constants.WAV_CHUNK_SIZE)
-        print(x_pred.shape)
+        x_out = self.model(self.x)
+        assert x_out.shape == (10, 256, 1000)
+
+    def test_encoded_entropy(self):
+        enc_ent = self.model.encoded_entropy(self.x)
+        assert enc_ent >= 0.
 
 
-    def testEncodedEntropy(self):
-        x = torch.Tensor([[1.] * constants.WAV_CHUNK_SIZE,
-                          [0.] * constants.WAV_CHUNK_SIZE]).unsqueeze(dim=1)
-        actual = self.model.encoded_entropy(x)
-        expected1 = torch.log(torch.Tensor([2.,]))
-        expected2 = torch.Tensor([0.,])
-        assert(torch.allclose(actual, expected1) or torch.allclose(actual, expected2))
+    def test_binary_encoding(self):
+        binary_enc = self.model.binary_encoding(self.x)
+        assert binary_enc.shape == (10, 100)
+
+    def test_row_entropy(self):
+        rand_x = torch.randint(low=0,
+                               high=2,
+                               size=(200, 100))
+        ent = row_entropy(rand_x)
+        assert ent > 0.
 
 
 if __name__ == "__main__":

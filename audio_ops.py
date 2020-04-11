@@ -1,4 +1,10 @@
 # audio_ops.py
+"""
+
+ !!!! Currently normalizing into [-1, 1] by assuming
+     16-bit PCM, so dividing by 2**15
+
+"""
 import os
 import urllib.request
 import numpy as np
@@ -22,13 +28,14 @@ def chunk_write_audio(wav_infilepath,
     wavname = wav_infilepath.split("/")[-1].split(".")[0]
     rate, chunks = chunk_audio(wav_infilepath, chunk_size)
     for i, np_chunk in enumerate(chunks):
-        fpath = os.path.abspath(os.path.join(chunks_outdir, f"{wavname}_{i}.wav"))
+        fpath = os.path.abspath(os.path.join(chunks_outdir,
+                                             f"{wavname}_{i}.wav"))
         if not os.path.exists(fpath):
             scipy.io.wavfile.write(fpath, rate, np_chunk)
 
 
 def chunk_audio(wav_filepath, chunk_size=WAV_CHUNK_SIZE):
-
+    # normalize in this method
     rate, np_audio = scipy.io.wavfile.read(wav_filepath)
     np_audio = np_audio.flatten()
     length = np_audio.shape[0]
@@ -59,14 +66,23 @@ def chunks_dir_to_numpy(chunks_dir):
 
 def chunks_to_numpy(chunks):
     mu_chunks = list(mu_transform(v) for v in chunks)
-    z = np.array(mu_chunks)
+    z = np.vstack(mu_chunks)
     return z
 
 
 def mu_transform(v, quantization_channels=256):
-    return torchaudio.functional.mu_law_encoding(torch.tensor(v),
-                                                 quantization_channels=quantization_channels)\
-        .float().data.numpy()
+    #!! note the torchaudio method expects the input to already be normalized
+    # into [-1, 1], otherwise it will not give an output in the quantization bounds
+    # 0....quantization_channels - 1
+    # !!!! Assuming 16-bit PCM, so dividing by 2**15 for normalization
+    # additional performs a one-hot after the quantization
+    normalized_v = v / 2. ** 15
+    mu_v = torchaudio.functional.mu_law_encoding(
+        torch.tensor(normalized_v),
+        quantization_channels=quantization_channels)
+    if len(mu_v.shape) == 1:
+        mu_v = mu_v.unsqueeze(dim=0)
+    return torch.nn.functional.one_hot(mu_v, 256).permute(0, 2, 1).float()
 
 
 def normalize_np_vector(v):
@@ -93,7 +109,6 @@ def download_wav_files(remote_filepaths,
         local_filepaths.append(local_fp)
     print("finished downloads")
     return local_filepaths
-
 
 
 def download_yes_no():
