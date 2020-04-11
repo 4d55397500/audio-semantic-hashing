@@ -4,6 +4,14 @@
 
 An API for semantic hashing and indexing for local search of audio wav files.
 
+Architecture
+---
+
+insert neural network ASCII diagram here
+
+
+insert system architecture diagram here
+
 Background
 ---
 
@@ -22,11 +30,10 @@ This project is for the purpose of demonstrating semantic hashing. A more approp
 Implementation
 ---
 #### Pre-processing
-Ideally pre-process as done in Wavenet, with mu transform. Currently pre-processing consists solely of normalizing the numpy vector for each chunk.
+Audio is broken up into chunks, normalized, and quantized into one of 256 disrete values according to to the mu companding transform.
 
-#### Autoencoder
-The current implementation consists of dense encoders and decoders.
-A convolutional autoencoder (tbd) would be more appropriate for audio.
+#### Encoder & Decoder
+The encoder and decoder are stacks of increasingly/decreasingly dilated convolutional layers, as in Wavenet. The convolutional layers in theory enable similar bit representations for similar events but at different times in the audio.; the Wavenet-style composition of dilations in theory enables efficient long-range correlations. However we will keep the effective kernel length less than the chunk size we use.
 
 #### Indexing
 Currently using the Spotify [annoy](https://github.com/spotify/annoy) library to index binary codes and run local search by the Hamming distance criterion.
@@ -34,6 +41,21 @@ Currently using the Spotify [annoy](https://github.com/spotify/annoy) library to
 #### Parameters
 
 Specifiable parameters are stored in `constants.py`. These include values determining the audio pre-processing, as well as neural network and index structures.
+
+Data Representations
+--
+Single channel audio are assumed given as 16-bit PCM wav files, read into numpy arrays/torch tensors of shape
+`[num_samples, audio_length]`. 
+
+These are normalized into [-1, 1] by dividing by 2^15, then fed into a mu companding transform of 256 quantization levels. This will define for each audio sample point a one-hot 256-dimensional vector.
+
+Each audio vector is broken up into segments of length `CHUNK_SIZE`. The formal input to the network is vectors of 256 dimensional one-hots, of shape `[batch_size, 256, CHUNK_SIZE]`.
+
+The encoder performs a series of dilated left-padded convolutions, mapping a batch of audio chunks to an encoded representation of shape `[batch_size, ENCODED_BITSEQ_LENGTH]`.
+
+The decoder reverses this, outputting a batch of shape
+`[batch_size, 256, CHUNK_SIZE]`. A per-256 dim vector cross entropy with corresponding softmax is used as the loss function.
+
 
 Requirements
 --
