@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.com/4d55397500/audio-semantic-hashing.svg?branch=master)](https://travis-ci.org/4d55397500/audio-semantic-hashing)
 
 
-An API for semantic hashing and indexing for local search of audio wav files.
+Semantic hashing and indexing for local search of audio wav files.
 
 Architecture
 ---
