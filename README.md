@@ -57,6 +57,10 @@ The encoder performs a series of dilated left-padded convolutions, mapping a bat
 The decoder reverses this, outputting a batch of shape
 `[batch_size, 256, CHUNK_SIZE]`. A per-256 dim vector cross entropy with corresponding softmax is used as the loss function.
 
+Audio Sources
+--
+
+tbd
 
 Requirements
 --
