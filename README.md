@@ -7,7 +7,39 @@ Semantic hashing and indexing for local search of audio wav files.
 Architecture
 ---
 
-insert neural network ASCII diagram here
+### Network Diagrams
+
+semantic hashing architecture
+
+```
+
+	input -> encoder -|
+					  | -> (+)-> [sigmoid activation] -> decoder -> output
+	noise -> |--------|
+	
+```	
+
+audio preprocessing
+
+```
+raw input -> [normalization] -> [mu transform] -> [chunking] -> input
+
+```
+
+encoder architecture
+
+```
+left-padded conv (d=2^0) -> left-padded conv (d=2^1) -> ...
+```
+
+decoder architecture
+
+```
+left-padded conv (d=2^N) -> left-padded conv (d=2^(N-1)) -> ...
+```
+
+
+
 
 
 insert system architecture diagram here
