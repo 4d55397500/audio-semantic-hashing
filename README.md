@@ -41,7 +41,15 @@ left-padded conv (d=2^N) -> left-padded conv (d=2^(N-1)) -> ...
 
 ### System Architecture Diagram
 
-tbd
+```
+
+remote audio sources - local audio chunks
+ 	                	|        
+			semantic hashing
+	                        |
+		     index w/encoded chunks
+								
+```
 
 Background
 ---
