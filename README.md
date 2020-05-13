@@ -14,7 +14,7 @@ semantic hashing architecture
 ```
 
 	input -> encoder -|
-					  | -> (+)-> [sigmoid activation] -> decoder -> output
+			  | -> (+)-> [sigmoid activation] -> decoder -> output
 	noise -> |--------|
 	
 ```	
@@ -39,10 +39,9 @@ left-padded conv (d=2^N) -> left-padded conv (d=2^(N-1)) -> ...
 ```
 
 
+### system architecture diagram
 
-
-
-insert system architecture diagram here
+tbd
 
 Background
 ---
