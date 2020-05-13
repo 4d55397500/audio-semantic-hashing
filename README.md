@@ -9,37 +9,37 @@ Architecture
 
 ### Network Diagrams
 
-semantic hashing architecture
+#### semantic hashing architecture
 
 ```
 
 	input -> encoder -|
 			  | -> (+)-> [sigmoid activation] -> decoder -> output
-	noise -> |--------|
+  incr. noise -> |--------|
 	
 ```	
 
-audio preprocessing
+#### audio preprocessing
 
 ```
 raw input -> [normalization] -> [mu transform] -> [chunking] -> input
 
 ```
 
-encoder architecture
+#### encoder architecture
 
 ```
 left-padded conv (d=2^0) -> left-padded conv (d=2^1) -> ...
 ```
 
-decoder architecture
+#### decoder architecture
 
 ```
 left-padded conv (d=2^N) -> left-padded conv (d=2^(N-1)) -> ...
 ```
 
 
-### system architecture diagram
+### System Architecture Diagram
 
 tbd
 
