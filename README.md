@@ -26,8 +26,8 @@ raw input -> [normalization] -> [mu transform] -> [chunking] -> input
 
 ```
 
-#### encoder architecture
-
+#### encoder architecture 
+(d = dilation)
 ```
 left-padded conv (d=2^0) -> left-padded conv (d=2^1) -> ...
 ```
@@ -45,7 +45,7 @@ left-padded conv (d=2^N) -> left-padded conv (d=2^(N-1)) -> ...
 
 remote audio sources - local audio chunks
  	                	|        
-			semantic hashing
+			encoder + sigmoid activation
 	                        |
 		     index w/encoded chunks
 								
