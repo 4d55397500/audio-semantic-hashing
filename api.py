@@ -6,9 +6,12 @@
 """
 from flask import Flask, jsonify, request
 import os
+import atexit
+
 
 import audio_ops
 import local_index
+import ops
 import training
 import constants
 import custom_exceptions
@@ -19,14 +22,7 @@ app = Flask(__name__)
 
 @app.before_first_request
 def activate_job():
-    print("making directories...")
-    if not os.path.exists(constants.LOCAL_CHUNK_FILEPATHS):
-        os.mkdir(constants.LOCAL_CHUNK_FILEPATHS)
-    if not os.path.exists(constants.MODEL_SAVE_DIR):
-        os.mkdir(constants.MODEL_SAVE_DIR)
-    if not os.path.exists(constants.INDEX_DIR):
-        os.mkdir(constants.INDEX_DIR)
-
+    ops.ensure_dirs()
 
 @app.route('/datasetinfo', methods=['GET'])
 def dataset_info():
@@ -44,8 +40,7 @@ def add():
         content = request.json
         print(content)
         remote_filepaths = content["filepaths"]
-        #local_filepaths = audio_ops.download_wav_files(remote_filepaths)
-        local_filepaths = audio_ops.download_yes_no()
+        local_filepaths = audio_ops.download_wav_files(remote_filepaths)
         for wav_fp in local_filepaths:
             audio_ops.chunk_write_audio(wav_fp)
         return jsonify({'status': 'success',
@@ -95,6 +90,7 @@ def search():
 
 
 if __name__ == "__main__":
+    atexit.register(ops.clean_dirs)
     app.run()
 
 

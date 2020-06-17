@@ -20,7 +20,7 @@ TRAINING_BATCH_SIZE = 100
 # length of encoded bit sequence representation
 ENCODED_BITSEQ_LENGTH = 100
 
-LOCAL_WAV_FILEPATHS = "waves_yesno"
+LOCAL_WAV_FILEPATHS = "wavs"
 LOCAL_CHUNK_FILEPATHS = "chunks"
 
 MODEL_SAVE_DIR = "model"
@@ -34,4 +34,7 @@ INDEX_NUM_TREES = 100  # how to choose?
 
 LOCAL_SEARCH_CHUNKS_DIR = "tmp"
 TEST_RESOURCES_DIR = "test_resources"
+TEST_WAV_PATH = f"{TEST_RESOURCES_DIR}/test.wav"
 
+RUNTIME_DIRS = [LOCAL_WAV_FILEPATHS, LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR,
+                LOCAL_SEARCH_CHUNKS_DIR]

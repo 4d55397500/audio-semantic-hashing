@@ -1,22 +1,19 @@
 # training.py
 
-import os
 import torch
+
+from ops import ensure_dirs
 from semantic_hashing import SemanticHashing
 from conv_decoder import ConvDecoder
 from conv_encoder import ConvEncoder
 
-from constants import WAV_CHUNK_SIZE, \
-    LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_DIR, \
-    MODEL_SAVE_PATH, TRAINING_BATCH_SIZE
-
+from constants import LOCAL_CHUNK_FILEPATHS, MODEL_SAVE_PATH, TRAINING_BATCH_SIZE
 from audio_ops import chunks_dir_to_numpy
-
-celoss = torch.nn.CrossEntropyLoss()
 
 
 def loss_criterion(output, target):
     target_index_vector = torch.argmax(target, dim=1)
+    celoss = torch.nn.CrossEntropyLoss()
     loss_value = celoss(
         input=output,
         target=target_index_vector)
@@ -24,9 +21,6 @@ def loss_criterion(output, target):
 
 
 def train_pytorch(batch_size, n_epochs):
-
-    if not os.path.exists(MODEL_SAVE_DIR):
-        os.mkdir(MODEL_SAVE_DIR)
 
     x_train = torch.tensor(
         chunks_dir_to_numpy(LOCAL_CHUNK_FILEPATHS))
@@ -77,8 +71,3 @@ def train_pytorch(batch_size, n_epochs):
             print(f"saving model to {MODEL_SAVE_PATH}")
             print("-" * 20)
             torch.save(model, MODEL_SAVE_PATH)
-
-
-if __name__ == "__main__":
-    train_pytorch(batch_size=TRAINING_BATCH_SIZE, n_epochs=100)
-

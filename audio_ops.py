@@ -17,6 +17,7 @@ from constants import LOCAL_CHUNK_FILEPATHS, \
     LOCAL_WAV_FILEPATHS, WAV_CHUNK_SIZE
 
 
+
 def chunk_write_audio(wav_infilepath,
                       chunks_outdir=LOCAL_CHUNK_FILEPATHS,
                       chunk_size=WAV_CHUNK_SIZE):
@@ -88,7 +89,7 @@ def mu_transform(v, quantization_channels=256):
 def normalize_np_vector(v):
     norm = np.linalg.norm(v)
     if norm == 0:
-       return v
+        return v
     return v / norm
 
 
@@ -102,18 +103,10 @@ def download_wav_files(remote_filepaths,
         local_fp = os.path.join(local_wav_filepaths, fname)
         if not os.path.exists(local_fp):
             print(f"Downloading {url}...")
-
             urllib.request.urlretrieve(url, filename=local_fp)
         else:
             print(f"{fname} already downloaded")
         local_filepaths.append(local_fp)
     print("finished downloads")
     return local_filepaths
-
-
-def download_yes_no():
-    import sample_datasets
-    sample_datasets.download_yes_no()
-    return [os.path.join('waves_yesno', name) for name in os.listdir('./waves_yesno') if
-            name.endswith('.wav')]
 

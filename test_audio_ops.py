@@ -3,18 +3,20 @@ import unittest
 import torch
 
 import audio_ops
+import ops
 import constants
-
-REAL_SAMPLE_CHUNK = 'waves_yesno/0_1_0_0_0_1_1_0.wav'
 
 
 class TestAudioOps(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
+        ops.ensure_dirs()
         self.test_wav_path = "./test_resources/test.wav"
 
-    def tearDown(self):
-        pass
+    @classmethod
+    def tearDownClass(self):
+        ops.clean_dirs()
 
     def test_chunk_write_audio(self):
         audio_ops.chunk_write_audio(self.test_wav_path,
@@ -27,8 +29,9 @@ class TestAudioOps(unittest.TestCase):
                                       quantization_channels=256)
         allowed_values = [float(i) for i in range(256)]
         for v in mu_x.squeeze():
-            for e in v:
-                assert e in allowed_values, \
+            for ve in v:
+                for e in ve.data.cpu().numpy():
+                    assert e in allowed_values, \
                     f"mu quantization out of range: {e} found"
 
     def test_chunks_to_numpy(self):

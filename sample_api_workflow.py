@@ -1,4 +1,4 @@
-# sample_workflow.py
+# sample_api_workflow.py
 
 import requests
 import json

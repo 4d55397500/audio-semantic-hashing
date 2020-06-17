@@ -8,12 +8,17 @@ import torch
 
 class TestSemanticHashing(unittest.TestCase):
 
-    def setUp(self):
-        self.model = SemanticHashing(
+    @classmethod
+    def setUpClass(cls):
+        cls.model = SemanticHashing(
             encoder=ConvEncoder(),
             decoder=ConvDecoder(),
         )
-        self.x = torch.ones(10, 256, 1000)
+        cls.x = torch.ones(10, 256, 1000)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
     def test_forward(self):
         x_out = self.model(self.x)
@@ -22,7 +27,6 @@ class TestSemanticHashing(unittest.TestCase):
     def test_encoded_entropy(self):
         enc_ent = self.model.encoded_entropy(self.x)
         assert enc_ent >= 0.
-
 
     def test_binary_encoding(self):
         binary_enc = self.model.binary_encoding(self.x)

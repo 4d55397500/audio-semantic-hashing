@@ -5,22 +5,27 @@ import os
 import unittest
 import shutil
 
+
 import api
+import ops
 import constants
+import test_training
 unittest.TestLoader.sortTestMethodsUsing = None
 
 
 class TestApi(unittest.TestCase):
 
-    def setUp(self):
-        self.app = api.app.test_client()
+    @classmethod
+    def setUpClass(cls):
+        ops.ensure_dirs()
+        test_training.chunk_test_resources()
+        cls.app = api.app.test_client()
         #self.remote_file_paths = \
          #   [url for urls in constants.SAMPLE_AUDIO.values() for url in urls]
 
-    def tearDown(self):
-        for path in [constants.MODEL_SAVE_DIR, constants.INDEX_DIR]:
-            if os.path.exists(path):
-                shutil.rmtree(path)
+    @classmethod
+    def tearDownClass(cls):
+        ops.clean_dirs()
 
     @unittest.skip("network connection remote build")
     def test_add(self):
@@ -28,7 +33,6 @@ class TestApi(unittest.TestCase):
                                  json={"filepaths": []})#self.remote_file_paths})
         content = response.json
         assert 'local_filepaths' in content, 'missing response key'
-        assert 'waves_yesno/0_0_0_0_1_1_1_1.wav' in content['local_filepaths'], 'missing wav'
 
 
     def test_dataset_info(self):
@@ -39,6 +43,7 @@ class TestApi(unittest.TestCase):
         assert content['num_wavs'] >= 0
         assert content['num_chunks'] >= 0
 
+    @unittest.skip("no need training already tested in test_training")
     def test_train(self):
         response = self.app.post("/train",
                                  json={"n_epochs": 1})
