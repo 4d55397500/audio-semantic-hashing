@@ -14,6 +14,14 @@ Or perform a sample training with
 python3 sample_training.py
 ```
 
+The sample training can be run on [Google Colab](https://colab.research.google.com/) with these script calls
+
+```
+!git clone https://github.com/4d55397500/audio-semantic-hashing.git
+!pip3 install -r audio-semantic-hashing/requirements.txt
+!python3 audio-semantic-hashing/sample_training.py
+```
+
 Architecture
 ---
 
