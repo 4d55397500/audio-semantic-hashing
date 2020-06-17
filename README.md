@@ -4,6 +4,16 @@
 
 Semantic hashing and indexing for local search of audio wav files.
 
+Run
+---
+Run the server and call the API as documented below.
+Or perform a sample training with
+
+
+```
+python3 sample_training.py
+```
+
 Architecture
 ---
 
@@ -99,7 +109,9 @@ The decoder reverses this, outputting a batch of shape
 Audio Sources
 --
 
-tbd
+Audio sources are passed wave filepaths to the `/add` API. 
+
+The `sample_training.py` on the other hand is currently hardcoded on the torchaudio [yes-no dataset](https://pytorch.org/audio/_modules/torchaudio/datasets/yesno.html).
 
 Requirements
 --
