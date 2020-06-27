@@ -83,7 +83,7 @@ An index over binary compressed representations of audio chunks facilitates neig
 search using a Hamming distance.
 
 
-This project is for the purpose of demonstrating semantic hashing. A more appropriate approach would be to train a continuous embedding and then use a vector-based index like [faiss](https://github.com/facebookresearch/faiss).
+This project is for the purpose of demonstrating semantic hashing. A potentially more effective approach would be to train a continuous embedding and then use a vector-based index like [faiss](https://github.com/facebookresearch/faiss).
 
 Implementation
 ---
