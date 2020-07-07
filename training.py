@@ -20,7 +20,7 @@ def loss_criterion(output, target):
     return loss_value
 
 
-def train_pytorch(batch_size, n_epochs):
+def train_pytorch(batch_size, n_epochs, learning_rate=1e-2):
 
     x_train = torch.tensor(
         chunks_dir_to_numpy(LOCAL_CHUNK_FILEPATHS))
@@ -33,7 +33,7 @@ def train_pytorch(batch_size, n_epochs):
     )
 
     criterion = loss_criterion
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     N = x_train.size()[0]
     print("starting training loop ...")

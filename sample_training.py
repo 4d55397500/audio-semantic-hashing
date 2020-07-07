@@ -12,7 +12,8 @@ def sample_training():
     torchaudio_datasets.download_yes_no()
     ops.prepare_audio()
     training.train_pytorch(batch_size=constants.TRAINING_BATCH_SIZE,
-                           n_epochs=100)
+                           n_epochs=100,
+                           learning_rate=1e-2)
     ops.clean_dirs()
 
 
