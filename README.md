@@ -3,7 +3,7 @@
 
 
 Semantic hashing and indexing for local search of audio wav files.
-References notes: https://www.redwrasse.io/notes/semantichashing.html
+References notes: https://www.redwrasse.io/notes/semantichashing
 
 Run
 ---
